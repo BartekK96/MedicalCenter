@@ -4,8 +4,9 @@ import {
   Column,
   CreateDateColumn,
   ManyToOne,
+  UpdateDateColumn,
 } from 'typeorm';
-import { DoctorEntity } from 'src/doctor/doctor.entity';
+import { DoctorEntity } from '../doctor/doctor.entity';
 
 @Entity()
 export class VisitEntity {
@@ -14,17 +15,17 @@ export class VisitEntity {
   @CreateDateColumn()
   created: Date;
 
+  @UpdateDateColumn()
+  update: Date;
+
   @Column('date')
-  date: string;
+  date: Date;
 
   @Column('time')
   time: string;
 
   @Column('text')
   visitName: string;
-
-  @Column('text')
-  doctor: string;
 
   @Column('boolean')
   available: boolean = true;

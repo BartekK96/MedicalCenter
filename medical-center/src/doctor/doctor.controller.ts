@@ -13,16 +13,13 @@ import { ValidationPipe } from '../shared/validation.pipe';
 import { DoctorLoginDTO } from './doctorLogin.dto';
 import { DoctorRegisterDTO } from './doctorRegister.dto';
 
-@Controller('doctor')
+@Controller('doctors')
 export class DoctorController {
   constructor(private doctorService: DoctorService) {}
 
   // available for all
   @Get()
-  @UseGuards(new AuthGuard())
-  showAllDoctors(@Doctor() doctor) {
-    // tslint:disable-next-line:no-console
-    console.log(doctor);
+  showAllDoctors() {
     return this.doctorService.showAll();
   }
 

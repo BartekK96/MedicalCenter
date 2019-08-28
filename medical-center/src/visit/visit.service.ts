@@ -4,27 +4,42 @@ import { VisitEntity } from './visit.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { VisitDTO } from './visit.dto';
 import { VisitRO } from './visit.ro';
+import { DoctorEntity } from '../doctor/doctor.entity';
 
 @Injectable()
 export class VisitService {
   constructor(
     @InjectRepository(VisitEntity)
     private visitRepostitory: Repository<VisitEntity>,
+    @InjectRepository(DoctorEntity)
+    private doctorRepository: Repository<DoctorEntity>,
   ) {}
 
-  async showAll() {
-    return await this.visitRepostitory.find();
+  async showAll(): Promise<VisitRO[]> {
+    const visits = await this.visitRepostitory.find({ relations: ['doctor'] });
+    return visits.map(visit => {
+      return this.toResponseObject(visit);
+    });
   }
-  async showOne(id: string) {
-    const visit = await this.visitRepostitory.findOne({ where: { id } });
+  async showOne(id: string): Promise<VisitRO> {
+    const visit = await this.visitRepostitory.findOne({
+      where: { id },
+      relations: ['doctor'],
+    });
     if (!visit) {
       throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     }
-    return visit;
+    return this.toResponseObject(visit);
   }
 
-  async create(data: VisitDTO) {
-    const visit = await this.visitRepostitory.create(data);
+  async create(doctorId: string, data: VisitDTO): Promise<VisitRO> {
+    const doc = await this.doctorRepository.findOne({
+      where: { id: doctorId },
+    });
+    const visit = await this.visitRepostitory.create({
+      ...data,
+      doctor: doc,
+    });
     await this.visitRepostitory.save(visit);
     return this.toResponseObject(visit);
   }
@@ -39,18 +54,24 @@ export class VisitService {
   //       where: { visitName: `${name}` },
   //     });
   //   }
-  async update(id: string, data: Partial<VisitDTO>) {
-    let visit = await this.visitRepostitory.findOne({ where: { id } });
+  async update(id: string, data: Partial<VisitDTO>): Promise<VisitRO> {
+    let visit = await this.visitRepostitory.findOne({
+      where: { id },
+      relations: ['doctor'],
+    });
     if (!visit) {
       throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     }
     await this.visitRepostitory.update({ id }, data);
     visit = await this.visitRepostitory.findOne({ where: { id } });
-    return visit;
+    return this.toResponseObject(visit);
   }
 
   async delete(id: string) {
-    const visit = await this.visitRepostitory.findOne({ where: { id } });
+    const visit = await this.visitRepostitory.findOne({
+      where: { id },
+      relations: ['doctor'],
+    });
     if (!visit) {
       throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     }
@@ -59,9 +80,6 @@ export class VisitService {
   }
 
   private toResponseObject(visit: VisitEntity): VisitRO {
-    const responseObject: any = {
-      ...visit,
-    };
-    return responseObject;
+    return { ...visit, doctor: visit.doctor.toResponseObject(false) };
   }
 }

@@ -1,4 +1,5 @@
-import { IsString, IsDate } from 'class-validator';
+import { IsString, IsDate, IsArray } from 'class-validator';
+import { DoctorEntity } from '../doctor/doctor.entity';
 
 export class VisitDTO {
   @IsString()
@@ -7,9 +8,8 @@ export class VisitDTO {
   @IsString()
   time: string;
 
-  @IsDate()
-  date: string;
+  // @IsDate()
+  // date: string;
 
-  @IsString()
-  doctor: string;
+  // array of doctors
 }

@@ -4,10 +4,13 @@ import {
   CreateDateColumn,
   Column,
   BeforeInsert,
+  OneToMany,
 } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 import * as jwt from 'jsonwebtoken';
 import { DoctorRO } from './doctor.ro';
+import { VisitEntity } from '../visit/visit.entity';
+import { UserRole } from '../shared/roles';
 
 @Entity('doctor')
 export class DoctorEntity {
@@ -41,9 +44,17 @@ export class DoctorEntity {
   @Column('text')
   password: string;
 
-  
+  @Column({
+    type: 'enum',
+    enum: UserRole,
+    default: UserRole.DOCTOR,
+  })
+  role: UserRole;
 
-
+  @OneToMany(type => VisitEntity, visitObject => visitObject.doctor, {
+    cascade: true,
+  })
+  visits: VisitEntity[];
 
   @BeforeInsert()
   async hashPassword() {
@@ -57,22 +68,31 @@ export class DoctorEntity {
       lastName,
       specialization,
       login,
+      role,
+
       token,
     } = this;
-    const responseObject = {
+
+    const responseObject: DoctorRO = {
       id,
       created,
       firstName,
       lastName,
       specialization,
       login,
-      token,
+      role,
     };
+    if (this.visits) {
+      responseObject.visits = this.visits;
+    }
+    let returnResponseObject;
     if (showToken) {
-      responseObject.token = token;
+      returnResponseObject = { ...responseObject, token };
+    } else {
+      returnResponseObject = { ...responseObject };
     }
 
-    return responseObject;
+    return returnResponseObject;
   }
   async comparePassword(pass: string) {
     return await bcrypt.compare(pass, this.password);
