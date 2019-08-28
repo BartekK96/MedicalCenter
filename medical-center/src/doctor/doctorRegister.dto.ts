@@ -1,11 +1,14 @@
 import { IsNotEmpty } from 'class-validator';
 
-export class PatientDTO {
+export class DoctorRegisterDTO {
   @IsNotEmpty()
   firstName: string;
 
   @IsNotEmpty()
   lastName: string;
+
+  @IsNotEmpty()
+  specialization: string;
 
   @IsNotEmpty()
   login: string;

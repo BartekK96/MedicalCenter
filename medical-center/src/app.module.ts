@@ -9,9 +9,10 @@ import { PatientModule } from './patient/patient.module';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { HttpErrorFilter } from './shared/http-error.filter';
 import { LoggingInterceptor } from './shared/logging.interceptor';
+import { DoctorModule } from './doctor/doctor.module';
 
 @Module({
-  imports: [TypeOrmModule.forRoot(), VisitModule, PatientModule],
+  imports: [TypeOrmModule.forRoot(), VisitModule, PatientModule, DoctorModule],
   controllers: [AppController],
   providers: [
     AppService,

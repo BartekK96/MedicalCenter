@@ -7,10 +7,10 @@ import {
 } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 import * as jwt from 'jsonwebtoken';
-import { PatientRO } from './patient.ro';
+import { DoctorRO } from './doctor.ro';
 
-@Entity('patient')
-export class PatientEntity {
+@Entity('doctor')
+export class DoctorEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -29,25 +29,42 @@ export class PatientEntity {
 
   @Column({
     type: 'text',
+  })
+  specialization: string;
+
+  @Column({
+    type: 'text',
     unique: true,
   })
   login: string;
 
   @Column('text')
   password: string;
-  // Before insert have no will to work! why???
+
+  
+
+
+
   @BeforeInsert()
   async hashPassword() {
     this.password = await bcrypt.hash(this.password, 10);
   }
-
-  toResponseObject(showToken: boolean = true): PatientRO {
-    const { id, created, firstName, lastName, login, token } = this;
+  toResponseObject(showToken: boolean = true): DoctorRO {
+    const {
+      id,
+      created,
+      firstName,
+      lastName,
+      specialization,
+      login,
+      token,
+    } = this;
     const responseObject = {
       id,
       created,
       firstName,
       lastName,
+      specialization,
       login,
       token,
     };

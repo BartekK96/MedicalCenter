@@ -1,26 +1,38 @@
-import { Controller, Post, Get, Body, UsePipes } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  Body,
+  UsePipes,
+  UseGuards,
+} from '@nestjs/common';
 import { PatientService } from './patient.service';
-import { PatientDTO } from './patient.dto';
+import { PatientRegisterDTO } from './patientRegister.dto';
 import { ValidationPipe } from '../shared/validation.pipe';
+import { PatientLoginDTO } from './patientLogin.dto';
+import { AuthGuard } from '../shared/auth.guard';
+import { Patient } from './patient.decorator';
 
 @Controller('patients')
 export class PatientController {
   constructor(private patientService: PatientService) {}
 
+  // Guards for doctors
   @Get()
+  @UseGuards(new AuthGuard())
   showAllPatients() {
     return this.patientService.showAll();
   }
 
   @Post('login')
   @UsePipes(new ValidationPipe())
-  login(@Body() data: PatientDTO) {
+  login(@Body() data: PatientLoginDTO) {
     return this.patientService.login(data);
   }
 
   @Post('register')
   @UsePipes(new ValidationPipe())
-  register(@Body() data: PatientDTO) {
+  register(@Body() data: PatientRegisterDTO) {
     return this.patientService.register(data);
   }
 }

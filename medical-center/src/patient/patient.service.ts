@@ -1,8 +1,12 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { PatientEntity } from './patient.entity';
-import { PatientDTO } from './patient.dto';
+import { PatientRegisterDTO } from './patientRegister.dto';
+import { PatientRO } from './patient.ro';
+import { PatientLoginDTO } from './patientLogin.dto';
+
+import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class PatientService {
@@ -11,25 +15,28 @@ export class PatientService {
     private patientRepository: Repository<PatientEntity>,
   ) {}
 
-  async login(data: PatientDTO) {
-    const { firstName, lastName, login, password } = data;
+  async login(data: PatientLoginDTO): Promise<PatientRO> {
+    const { login, password } = data;
     const patient = await this.patientRepository.findOne({ where: { login } });
-    if (!patient || (await patient.comparePassword(password))) {
+    Logger.log(patient);
+    if (!patient || !(await patient.comparePassword(password))) {
       throw new HttpException('Invalid login/password', HttpStatus.BAD_REQUEST);
     }
-    return patient.toResponseObject;
+    return patient.toResponseObject();
   }
-  async register(data: PatientDTO) {
-    const { firstName, lastName, login, password } = data;
+
+  async register(data: PatientRegisterDTO): Promise<PatientRO> {
+    const { login } = data;
     let patient = await this.patientRepository.findOne({ where: { login } });
     if (patient) {
       throw new HttpException('User already exists!', HttpStatus.BAD_REQUEST);
     }
+    data.password = await bcrypt.hash(data.password, 10);
     patient = await this.patientRepository.create(data);
     await this.patientRepository.save(data);
     return patient.toResponseObject();
   }
-  async showAll() {
+  async showAll(): Promise<PatientRO[]> {
     const patients = await this.patientRepository.find();
     return patients.map(patient => patient.toResponseObject(false));
   }

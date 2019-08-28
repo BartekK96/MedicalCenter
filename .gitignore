@@ -1,1 +1,2 @@
-/medical-center.env
+/medical-center/.env
+.gitignore
