@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { VisitDTO } from './visit.dto';
 import { VisitRO } from './visit.ro';
 import { DoctorEntity } from '../doctor/doctor.entity';
+import { VisitRole } from '../shared/roles.visits';
 
 @Injectable()
 export class VisitService {
@@ -36,6 +37,13 @@ export class VisitService {
     const doc = await this.doctorRepository.findOne({
       where: { id: doctorId },
     });
+
+    // if (!Object.values(VisitRole).indexOf(`${data.visitName}`)) {
+    //   throw new HttpException(
+    //     'This kind of visit does not exist!',
+    //     HttpStatus.BAD_REQUEST,
+    //   );
+    // }
     const visit = await this.visitRepostitory.create({
       ...data,
       doctor: doc,
@@ -44,16 +52,18 @@ export class VisitService {
     return this.toResponseObject(visit);
   }
 
-  //   async showOneDoctor(doctor: string) {
-  //     return await this.visitRepostitory.find({
-  //       where: { doctor: `${doctor}` },
-  //     });
-  //   }
-  //   async showOneType(name: string) {
-  //     return await this.visitRepostitory.find({
-  //       where: { visitName: `${name}` },
-  //     });
-  //   }
+  async showOneDoctorVisits(id: string) {
+    const doctor = await this.doctorRepository.findOne({
+      where: { id },
+      relations: ['visits'],
+    });
+    return doctor.visits;
+  }
+  async showOneType(name: string) {
+    return await this.visitRepostitory.find({
+      where: { visitName: `${name}` },
+    });
+  }
   async update(id: string, data: Partial<VisitDTO>): Promise<VisitRO> {
     let visit = await this.visitRepostitory.findOne({
       where: { id },

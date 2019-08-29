@@ -28,18 +28,19 @@ export class VisitController {
   showVisit(@Param('id') id: string) {
     return this.visitService.showOne(id);
   }
-  // @Get('/doctors')
-  // showAllOneDoctorVisits() {
-  //   //   return this.visitService.showOneDoctor(doctor);
-  //   return this.visitService.showAll();
-  // }
+  @Get('/doctors/:id')
+  showAllOneDoctorVisits(@Param('id') id: string) {
+    return this.visitService.showOneDoctorVisits(id);
+  }
+
   // @Get('/visitNames')
-  // showAllOneTypeVisits(@Param() visitName: string) {
+  // showAllOneTypeVisits(@Param('id') visitName: string) {
   //   return this.visitService.showOneType(visitName);
   // }
 
+  // Only doctor can add visit
   @Post()
-  @UseGuards(new AuthGuard())
+  @UseGuards(new AuthGuard(), DoctorGuard)
   @UsePipes(new ValidationPipe())
   createVisit(@Doctor('id') doctor, @Body() data: VisitDTO) {
     return this.visitService.create(doctor, data);

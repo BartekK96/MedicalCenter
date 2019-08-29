@@ -5,6 +5,7 @@ import {
   Post,
   UsePipes,
   Body,
+  Param,
 } from '@nestjs/common';
 import { DoctorService } from './doctor.service';
 import { AuthGuard } from '../shared/auth.guard';
@@ -17,10 +18,13 @@ import { DoctorRegisterDTO } from './doctorRegister.dto';
 export class DoctorController {
   constructor(private doctorService: DoctorService) {}
 
-  // available for all
   @Get()
   showAllDoctors() {
     return this.doctorService.showAll();
+  }
+  @Get(':id')
+  showOneDoctor(@Param('id') id: string) {
+    return this.doctorService.showOneDoctor(id);
   }
 
   @Post('login')

@@ -10,7 +10,7 @@ import * as bcrypt from 'bcryptjs';
 import * as jwt from 'jsonwebtoken';
 import { DoctorRO } from './doctor.ro';
 import { VisitEntity } from '../visit/visit.entity';
-import { UserRole } from '../shared/roles';
+import { UserRole } from '../shared/roles.users';
 
 @Entity('doctor')
 export class DoctorEntity {
@@ -69,7 +69,6 @@ export class DoctorEntity {
       specialization,
       login,
       role,
-
       token,
     } = this;
 
@@ -99,11 +98,12 @@ export class DoctorEntity {
   }
 
   private get token() {
-    const { id, login } = this;
+    const { id, login, role } = this;
     return jwt.sign(
       {
         id,
         login,
+        role,
       },
       process.env.SECRET,
       { expiresIn: '12h' },

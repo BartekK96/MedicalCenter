@@ -45,4 +45,26 @@ export class DoctorService {
     const doctors = await this.doctorRepository.find({ relations: ['visits'] });
     return doctors.map(doctor => doctor.toResponseObject(false));
   }
+
+  async showOneDoctor(id: string): Promise<DoctorRO> {
+    const doctor = await this.doctorRepository.findOne({
+      where: { id },
+      relations: ['visits'],
+    });
+    if (!doctor) {
+      throw new HttpException('Not found', HttpStatus.NOT_FOUND);
+    }
+    return this.toResponseObject(doctor);
+  }
+
+  private toResponseObject(doctor: DoctorEntity): DoctorRO {
+    return { ...doctor };
+  }
+
+  async findDoctor(id: string): Promise<DoctorEntity> {
+    return await this.doctorRepository.findOne({
+      where: { id },
+      relations: ['visits'],
+    });
+  }
 }
