@@ -14,9 +14,10 @@ import { VisitDTO } from './visit.dto';
 import { ValidationPipe } from '../shared/validation.pipe';
 import { AuthGuard } from '../shared/auth.guard';
 import { Doctor } from '../doctor/doctor.decorator';
-import { DoctorGuard } from '../guards/doctor.guard';
+import { DoctorGuard } from '../shared/doctor.guard';
 
 @Controller('visits')
+@UseGuards(new AuthGuard())
 export class VisitController {
   constructor(private visitService: VisitService) {}
 
