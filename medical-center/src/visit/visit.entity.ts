@@ -9,6 +9,7 @@ import {
 import { DoctorEntity } from '../doctor/doctor.entity';
 import { VisitRO } from './visit.ro';
 import { VisitTypesEntity } from '../visitTypes/visitTypes.entity';
+import { VisitTypeRO } from '../visitTypes/visitTypes.ro';
 
 @Entity()
 export class VisitEntity {
@@ -33,8 +34,8 @@ export class VisitEntity {
   doctor: DoctorEntity;
 
   @ManyToOne(type => VisitTypesEntity, type => type.visits)
-  visitType: VisitRO;
-
+  // visitType: VisitTypeRO;
+  visitType: string;
   toResponseObject(): VisitRO {
     const {
       id,

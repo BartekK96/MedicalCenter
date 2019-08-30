@@ -21,6 +21,7 @@ import { DoctorGuard } from '../shared/doctor.guard';
 export class VisitController {
   constructor(private visitService: VisitService) {}
 
+  // it should show only available vists in future
   @Get()
   showAllVisitsType() {
     return this.visitService.showAllTypes();
@@ -29,16 +30,16 @@ export class VisitController {
   showVisit(@Param('id') id: string) {
     return this.visitService.showOne(id);
   }
+  // it should show only available vists in future
+  @Get('/types/:id')
+  showOneTypeAllVisits(@Param('id') id: string) {
+    return this.visitService.showOneType(id);
+  }
   @Get('/doctors/:id')
   showAllOneDoctorVisits(@Param('id') id: string) {
     return this.visitService.showOneDoctorVisits(id);
   }
-// /// to do
-//   @Get('/visitNames/:id')
-//   showAllOneTypeVisits(@Param('id') visitName: string) {
-//     return this.visitService.showOneType(visitName);
-//   }
-// ///
+
   // Only doctor can add visit
   @Post()
   @UseGuards(new AuthGuard(), DoctorGuard)
@@ -53,7 +54,7 @@ export class VisitController {
   updateVisit(@Param('id') id: string, @Body() data: Partial<VisitDTO>) {
     return this.visitService.update(id, data);
   }
-
+  // Only doctor can delete visit
   @Delete(':id')
   deleteVisit(@Param('id') id: string) {
     return this.visitService.delete(id);

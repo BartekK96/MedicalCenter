@@ -12,9 +12,6 @@ import { VisitTypeRO } from './visitTypes.ro';
 export class VisitTypesEntity {
   @PrimaryGeneratedColumn('uuid') id: string;
 
-  @PrimaryColumn()
-  id2: number;
-
   @Column({ type: 'text', unique: true })
   specialization: string;
 

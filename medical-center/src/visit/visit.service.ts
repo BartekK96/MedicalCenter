@@ -5,7 +5,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { VisitDTO } from './visit.dto';
 import { VisitRO } from './visit.ro';
 import { DoctorEntity } from '../doctor/doctor.entity';
-import { VisitRole } from '../shared/roles.visits';
+import { VisitTypesEntity } from '../visitTypes/visitTypes.entity';
+import { VisitTypeRO } from '../visitTypes/visitTypes.ro';
 
 @Injectable()
 export class VisitService {
@@ -14,6 +15,8 @@ export class VisitService {
     private visitRepostitory: Repository<VisitEntity>,
     @InjectRepository(DoctorEntity)
     private doctorRepository: Repository<DoctorEntity>,
+    @InjectRepository(VisitTypesEntity)
+    private visitTypeRepository: Repository<VisitTypesEntity>,
   ) {}
 
   async showAll(): Promise<VisitRO[]> {
@@ -41,18 +44,26 @@ export class VisitService {
     return doctor.visits;
   }
 
-  async showAllTypes(): Promise<any> {
-    return VisitRole;
+  async showAllTypes(): Promise<VisitTypeRO[]> {
+    const types = await this.visitTypeRepository.find();
+    return types.map(type => {
+      return type.toResponseObject();
+    });
   }
-  // to do
-  // async showOneType(name: string) {
-  //   console.log(VisitTypes);
-  //   const visits = await this.visitRepostitory.find({
-  //     where: { visitName: `${name}` },
-  //   });
-  //   console.log(visits);
-  //   return visits;
-  // }
+
+  async showOneType(id: string): Promise<VisitRO[]> {
+    const type = await this.visitTypeRepository.findOne({ where: { id } });
+
+    const visits = await this.visitRepostitory.find({
+      where: { visitType: type },
+    });
+    if (visits) {
+      return visits.map(visit => {
+        return this.toResponseObject(visit);
+      });
+    }
+    return [];
+  }
 
   async update(id: string, data: Partial<VisitDTO>): Promise<VisitRO> {
     let visit = await this.visitRepostitory.findOne({
@@ -91,24 +102,33 @@ export class VisitService {
     const doc = await this.doctorRepository.findOne({
       where: { id: doctorId },
     });
-    // checking type of visit
-    // if (!(await this.checkingTypeOfVisit(data.visitName))) {
-    //   throw new HttpException(
-    //     'This kind of visit does not exist!',
-    //     HttpStatus.BAD_REQUEST,
-    //   );
-    // }
+
+    const types = await this.visitTypeRepository.find();
+
+    const type = types.filter(typ => {
+      if (typ.visitType === data.visitType) {
+        return typ.visitType;
+      }
+      return false;
+    });
+    if (type.length < 1) {
+      throw new HttpException(
+        'This kind of visit does not exist!',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    ///
+    const obj = {
+      ...data,
+      doctor: doc.toResponseObject(),
+    };
+    console.log(obj);
+    ///
     const visit = await this.visitRepostitory.create({
       ...data,
       doctor: doc,
     });
     await this.visitRepostitory.save(visit);
     return this.toResponseObject(visit);
-  }
-  private async checkingTypeOfVisit(visitName: string): Promise<boolean> {
-    if (!Object.values(VisitRole).indexOf(`${visitName}`)) {
-      return true;
-    }
-    return false;
   }
 }

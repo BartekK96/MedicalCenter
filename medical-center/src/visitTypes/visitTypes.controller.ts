@@ -10,7 +10,7 @@ import {
 import { VisitTypesService } from './visitTypes.service';
 import { VisitTypeDTO } from './visitTypes.dto';
 
-@Controller('visit-types')
+@Controller('visit_types')
 export class VisitTypesController {
   constructor(private VisitTypeService: VisitTypesService) {}
 
@@ -20,7 +20,7 @@ export class VisitTypesController {
   }
   @Get(':id')
   showOneType(@Param('id') id: string) {
-    return this.VisitTypeService.showOne();
+    return this.VisitTypeService.showOne(id);
   }
   @Post()
   @UsePipes(new ValidationPipe())

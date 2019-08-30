@@ -1,4 +1,5 @@
 import { DoctorRO } from '../doctor/doctor.ro';
+import { VisitTypeRO } from '../visitTypes/visitTypes.ro';
 
 export class VisitRO {
   id?: string;
@@ -7,6 +8,6 @@ export class VisitRO {
   date: Date;
   time: string;
   available: boolean;
-  visitType: VisitRO;
+  visitType: string;
   doctor: DoctorRO;
 }

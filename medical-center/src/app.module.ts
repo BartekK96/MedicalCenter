@@ -10,11 +10,18 @@ import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { HttpErrorFilter } from './shared/http-error.filter';
 import { LoggingInterceptor } from './shared/logging.interceptor';
 import { DoctorModule } from './doctor/doctor.module';
+import { VisitTypesModule } from './visitTypes/visitTypes.module';
 
 // import 'reflect-metadata';
 
 @Module({
-  imports: [TypeOrmModule.forRoot(), VisitModule, PatientModule, DoctorModule],
+  imports: [
+    TypeOrmModule.forRoot(),
+    VisitModule,
+    PatientModule,
+    DoctorModule,
+    VisitTypesModule,
+  ],
   controllers: [AppController],
   providers: [
     AppService,
