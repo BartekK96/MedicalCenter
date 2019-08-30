@@ -11,6 +11,8 @@ import { HttpErrorFilter } from './shared/http-error.filter';
 import { LoggingInterceptor } from './shared/logging.interceptor';
 import { DoctorModule } from './doctor/doctor.module';
 
+// import 'reflect-metadata';
+
 @Module({
   imports: [TypeOrmModule.forRoot(), VisitModule, PatientModule, DoctorModule],
   controllers: [AppController],

@@ -22,8 +22,8 @@ export class VisitController {
   constructor(private visitService: VisitService) {}
 
   @Get()
-  showAllVisits() {
-    return this.visitService.showAll();
+  showAllVisitsType() {
+    return this.visitService.showAllTypes();
   }
   @Get(':id')
   showVisit(@Param('id') id: string) {
@@ -33,12 +33,12 @@ export class VisitController {
   showAllOneDoctorVisits(@Param('id') id: string) {
     return this.visitService.showOneDoctorVisits(id);
   }
-
-  // @Get('/visitNames')
-  // showAllOneTypeVisits(@Param('id') visitName: string) {
-  //   return this.visitService.showOneType(visitName);
-  // }
-
+// /// to do
+//   @Get('/visitNames/:id')
+//   showAllOneTypeVisits(@Param('id') visitName: string) {
+//     return this.visitService.showOneType(visitName);
+//   }
+// ///
   // Only doctor can add visit
   @Post()
   @UseGuards(new AuthGuard(), DoctorGuard)

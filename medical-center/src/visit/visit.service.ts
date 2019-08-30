@@ -40,11 +40,20 @@ export class VisitService {
     });
     return doctor.visits;
   }
-  async showOneType(name: string) {
-    return await this.visitRepostitory.find({
-      where: { visitName: `${name}` },
-    });
+
+  async showAllTypes(): Promise<any> {
+    return VisitRole;
   }
+  // to do
+  // async showOneType(name: string) {
+  //   console.log(VisitTypes);
+  //   const visits = await this.visitRepostitory.find({
+  //     where: { visitName: `${name}` },
+  //   });
+  //   console.log(visits);
+  //   return visits;
+  // }
+
   async update(id: string, data: Partial<VisitDTO>): Promise<VisitRO> {
     let visit = await this.visitRepostitory.findOne({
       where: { id },
@@ -71,19 +80,24 @@ export class VisitService {
   }
 
   private toResponseObject(visit: VisitEntity): VisitRO {
-    return { ...visit, doctor: visit.doctor.toResponseObject(false) };
+    return {
+      ...visit,
+      doctor: visit.doctor.toResponseObject(false),
+      visitType: visit.visitType,
+    };
   }
 
   async create(doctorId: string, data: VisitDTO): Promise<VisitRO> {
     const doc = await this.doctorRepository.findOne({
       where: { id: doctorId },
     });
-    if (!(await this.checkingTypeOfVisit(data.visitName))) {
-      throw new HttpException(
-        'This kind of visit does not exist!',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
+    // checking type of visit
+    // if (!(await this.checkingTypeOfVisit(data.visitName))) {
+    //   throw new HttpException(
+    //     'This kind of visit does not exist!',
+    //     HttpStatus.BAD_REQUEST,
+    //   );
+    // }
     const visit = await this.visitRepostitory.create({
       ...data,
       doctor: doc,

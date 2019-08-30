@@ -7,6 +7,8 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { DoctorEntity } from '../doctor/doctor.entity';
+import { VisitRO } from './visit.ro';
+import { VisitTypesEntity } from '../visitTypes/visitTypes.entity';
 
 @Entity()
 export class VisitEntity {
@@ -24,12 +26,36 @@ export class VisitEntity {
   @Column('time')
   time: string;
 
-  @Column('text')
-  visitName: string;
-
   @Column('boolean')
   available: boolean = true;
 
   @ManyToOne(type => DoctorEntity, doctor => doctor.visits)
   doctor: DoctorEntity;
+
+  @ManyToOne(type => VisitTypesEntity, type => type.visits)
+  visitType: VisitRO;
+
+  toResponseObject(): VisitRO {
+    const {
+      id,
+      created,
+      update,
+      date,
+      time,
+      available,
+      visitType,
+      doctor,
+    } = this;
+    const responseObject: any = {
+      id,
+      created,
+      update,
+      date,
+      time,
+      available,
+      visitType,
+      doctor,
+    };
+    return responseObject;
+  }
 }
