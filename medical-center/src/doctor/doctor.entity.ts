@@ -67,7 +67,8 @@ export class DoctorEntity {
       firstName,
       lastName,
       specialization,
-      login,
+      // login,
+      visits,
       role,
       token,
     } = this;
@@ -78,7 +79,8 @@ export class DoctorEntity {
       firstName,
       lastName,
       specialization,
-      login,
+      visits,
+      // login,
       role,
     };
     if (this.visits) {

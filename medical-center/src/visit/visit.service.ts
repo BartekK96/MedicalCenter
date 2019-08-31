@@ -7,6 +7,7 @@ import { VisitRO } from './visit.ro';
 import { DoctorEntity } from '../doctor/doctor.entity';
 import { VisitTypesEntity } from '../visitTypes/visitTypes.entity';
 import { VisitTypeRO } from '../visitTypes/visitTypes.ro';
+import { thisExpression } from '@babel/types';
 
 @Injectable()
 export class VisitService {
@@ -78,7 +79,7 @@ export class VisitService {
     return this.toResponseObject(visit);
   }
 
-  async delete(id: string) {
+  async delete(id: string): Promise<VisitEntity> {
     const visit = await this.visitRepostitory.findOne({
       where: { id },
       relations: ['doctor'],
@@ -93,21 +94,37 @@ export class VisitService {
   private toResponseObject(visit: VisitEntity): VisitRO {
     return {
       ...visit,
-      doctor: visit.doctor.toResponseObject(false),
-      visitType: visit.visitType,
+      doctor: visit.doctor, // .toResponseObject(false),
+      visitType: visit,
     };
   }
-
-  async create(doctorId: string, data: VisitDTO): Promise<VisitRO> {
+  // need to add minimum breaks beeteween patients 15 min
+  async create(doctorId: string, data: VisitEntity): Promise<VisitEntity> {
+    // <VisitRO>
     const doc = await this.doctorRepository.findOne({
       where: { id: doctorId },
     });
+    const type = await this.checkIfVisitTypeExist(data);
+    await this.checkIfDataAndTimeExists(data, doctorId);
 
+    const visit = await this.visitRepostitory.create({
+      ...data,
+      doctor: doc.toResponseObject(false), // .toResponseObject(false),
+      visitType: type,
+    });
+
+    await this.visitRepostitory.save(visit);
+    return visit; // this.toResponseObject(visit);
+  }
+  private async checkIfVisitTypeExist(
+    data: VisitEntity,
+  ): Promise<VisitTypesEntity> {
     const types = await this.visitTypeRepository.find();
-
-    const type = types.filter(typ => {
-      if (typ.visitType === data.visitType) {
-        return typ.visitType;
+    let typeId;
+    const type = types.filter(kind => {
+      if (kind.visitType === String(data.visitType)) {
+        typeId = kind.id;
+        return kind.visitType;
       }
       return false;
     });
@@ -117,18 +134,29 @@ export class VisitService {
         HttpStatus.BAD_REQUEST,
       );
     }
-    ///
-    const obj = {
-      ...data,
-      doctor: doc.toResponseObject(),
-    };
-    console.log(obj);
-    ///
-    const visit = await this.visitRepostitory.create({
-      ...data,
-      doctor: doc,
+    const typ = await this.visitTypeRepository.findOne({ where: { typeId } });
+    return typ;
+  }
+  private async checkIfDataAndTimeExists(
+    data: VisitEntity,
+    doctorId: string,
+  ): Promise<boolean> {
+    const date = await this.visitRepostitory.find({
+      where: { date: data.date, time: data.time },
+      relations: ['doctor'],
     });
-    await this.visitRepostitory.save(visit);
-    return this.toResponseObject(visit);
+    const exist = date.filter(visit => {
+      if (visit.doctor.id === doctorId) {
+        return true;
+      }
+      return false;
+    });
+    if (date.length < 1 && exist.length < 1) {
+      return true;
+    }
+    throw new HttpException(
+      'This date and time of your visit already exists!',
+      HttpStatus.BAD_REQUEST,
+    );
   }
 }

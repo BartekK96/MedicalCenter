@@ -10,6 +10,7 @@ import { DoctorEntity } from '../doctor/doctor.entity';
 import { VisitRO } from './visit.ro';
 import { VisitTypesEntity } from '../visitTypes/visitTypes.entity';
 import { VisitTypeRO } from '../visitTypes/visitTypes.ro';
+import { DoctorRO } from '../doctor/doctor.ro';
 
 @Entity()
 export class VisitEntity {
@@ -31,11 +32,11 @@ export class VisitEntity {
   available: boolean = true;
 
   @ManyToOne(type => DoctorEntity, doctor => doctor.visits)
-  doctor: DoctorEntity;
+  doctor: DoctorRO; // Partial<DoctorEntity>;
 
   @ManyToOne(type => VisitTypesEntity, type => type.visits)
-  // visitType: VisitTypeRO;
-  visitType: string;
+  visitType: VisitTypesEntity;
+
   toResponseObject(): VisitRO {
     const {
       id,

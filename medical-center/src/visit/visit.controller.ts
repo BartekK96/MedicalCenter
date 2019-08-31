@@ -15,6 +15,7 @@ import { ValidationPipe } from '../shared/validation.pipe';
 import { AuthGuard } from '../shared/auth.guard';
 import { Doctor } from '../doctor/doctor.decorator';
 import { DoctorGuard } from '../shared/doctor.guard';
+import { VisitEntity } from './visit.entity';
 
 @Controller('visits')
 @UseGuards(new AuthGuard())
@@ -44,7 +45,7 @@ export class VisitController {
   @Post()
   @UseGuards(new AuthGuard(), DoctorGuard)
   @UsePipes(new ValidationPipe())
-  createVisit(@Doctor('id') doctor, @Body() data: VisitDTO) {
+  createVisit(@Doctor('id') doctor, @Body() data: VisitEntity) {
     return this.visitService.create(doctor, data);
   }
 

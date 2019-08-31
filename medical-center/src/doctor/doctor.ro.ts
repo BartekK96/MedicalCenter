@@ -6,7 +6,7 @@ export class DoctorRO {
   firstName: string;
   lastName: string;
   specialization: string;
-  login: string;
+  login?: string;
   role: string;
   visits?: VisitEntity[];
   token?: string;
