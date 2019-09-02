@@ -16,20 +16,22 @@ import { AuthGuard } from '../shared/auth.guard';
 import { Doctor } from '../doctor/doctor.decorator';
 import { DoctorGuard } from '../shared/doctor.guard';
 import { VisitEntity } from './visit.entity';
+import { Patient } from '../patient/patient.decorator';
 
 @Controller('visits')
 @UseGuards(new AuthGuard())
 export class VisitController {
   constructor(private visitService: VisitService) {}
 
-  // it should show only available vists in future
-  @Get()
-  showAllVisitsType() {
-    return this.visitService.showAllTypes();
-  }
   @Get(':id')
   showVisit(@Param('id') id: string) {
     return this.visitService.showOne(id);
+  }
+
+  // it should show only available vists in future
+  @Get('/types')
+  showAllVisitsType() {
+    return this.visitService.showAllTypes();
   }
   // it should show only available vists in future
   @Get('/types/:id')
@@ -49,15 +51,29 @@ export class VisitController {
     return this.visitService.create(doctor, data);
   }
 
-  // Only patient can cancel visit(only 24h before visit)
-  @Put(':id')
+  // need to add guards for patients in future
+  @Post('/reserve/:id')
+  @UseGuards(new AuthGuard())
   @UsePipes(new ValidationPipe())
-  updateVisit(@Param('id') id: string, @Body() data: Partial<VisitDTO>) {
-    return this.visitService.update(id, data);
+  reserveVisit(@Patient('id') patient: string, @Param('id') id: string) {
+    return this.visitService.reserveVisit(patient, id);
   }
-  // Only doctor can delete visit
-  @Delete(':id')
-  deleteVisit(@Param('id') id: string) {
-    return this.visitService.delete(id);
+  @Post('/undo/:id')
+  @UseGuards(new AuthGuard())
+  @UsePipes(new ValidationPipe())
+  UndoVisit(@Patient('id') patient: string, @Param('id') id: string) {
+    return this.visitService.undoVisit(patient, id);
   }
+
+  // // Only patient can cancel visit(only 24h before visit)
+  // @Put(':id')
+  // @UsePipes(new ValidationPipe())
+  // updateVisit(@Param('id') id: string, @Body() data: Partial<VisitDTO>) {
+  //   return this.visitService.update(id, data);
+  // }
+  // // Only doctor can delete visit
+  // @Delete(':id')
+  // deleteVisit(@Param('id') id: string) {
+  //   return this.visitService.delete(id);
+  // }
 }

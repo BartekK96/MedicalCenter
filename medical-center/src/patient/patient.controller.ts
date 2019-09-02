@@ -5,6 +5,7 @@ import {
   Body,
   UsePipes,
   UseGuards,
+  Param,
 } from '@nestjs/common';
 import { PatientService } from './patient.service';
 import { PatientRegisterDTO } from './patientRegister.dto';
@@ -12,16 +13,22 @@ import { ValidationPipe } from '../shared/validation.pipe';
 import { PatientLoginDTO } from './patientLogin.dto';
 import { AuthGuard } from '../shared/auth.guard';
 import { Patient } from './patient.decorator';
+import { DoctorGuard } from '../shared/doctor.guard';
 
 @Controller('patients')
 export class PatientController {
   constructor(private patientService: PatientService) {}
 
-  // Guards for doctors
   @Get()
-  @UseGuards(new AuthGuard())
+  @UseGuards(new AuthGuard(), DoctorGuard)
   showAllPatients() {
     return this.patientService.showAll();
+  }
+
+  @Get(':id')
+  @UseGuards(new AuthGuard(), DoctorGuard)
+  showOnePateint(@Param('id') id: string) {
+    return this.patientService.showOne(id);
   }
 
   @Post('login')

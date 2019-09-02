@@ -6,8 +6,6 @@ import { PatientRegisterDTO } from './patientRegister.dto';
 import { PatientRO } from './patient.ro';
 import { PatientLoginDTO } from './patientLogin.dto';
 
-import * as bcrypt from 'bcryptjs';
-
 @Injectable()
 export class PatientService {
   constructor(
@@ -18,7 +16,6 @@ export class PatientService {
   async login(data: PatientLoginDTO): Promise<PatientRO> {
     const { login, password } = data;
     const patient = await this.patientRepository.findOne({ where: { login } });
-    Logger.log(patient);
     if (!patient || !(await patient.comparePassword(password))) {
       throw new HttpException('Invalid login/password', HttpStatus.BAD_REQUEST);
     }
@@ -29,15 +26,25 @@ export class PatientService {
     const { login } = data;
     let patient = await this.patientRepository.findOne({ where: { login } });
     if (patient) {
-      throw new HttpException('User already exists!', HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        'User login already exists!',
+        HttpStatus.BAD_REQUEST,
+      );
     }
-    data.password = await bcrypt.hash(data.password, 10);
+
     patient = await this.patientRepository.create(data);
-    await this.patientRepository.save(data);
+    await this.patientRepository.save(patient);
     return patient.toResponseObject();
   }
   async showAll(): Promise<PatientRO[]> {
     const patients = await this.patientRepository.find();
     return patients.map(patient => patient.toResponseObject(false));
+  }
+  async showOne(id: string): Promise<any> {
+    const patient = await this.patientRepository.findOne({
+      where: { id },
+      relations: ['visit'],
+    });
+    return patient;
   }
 }

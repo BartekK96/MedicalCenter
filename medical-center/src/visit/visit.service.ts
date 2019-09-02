@@ -7,7 +7,11 @@ import { VisitRO } from './visit.ro';
 import { DoctorEntity } from '../doctor/doctor.entity';
 import { VisitTypesEntity } from '../visitTypes/visitTypes.entity';
 import { VisitTypeRO } from '../visitTypes/visitTypes.ro';
-import { thisExpression } from '@babel/types';
+import { PatientEntity } from '../patient/patient.entity';
+import { booleanLiteral } from '@babel/types';
+import { PatientRO } from '../patient/patient.ro';
+
+// need to upgrade response object
 
 @Injectable()
 export class VisitService {
@@ -18,6 +22,8 @@ export class VisitService {
     private doctorRepository: Repository<DoctorEntity>,
     @InjectRepository(VisitTypesEntity)
     private visitTypeRepository: Repository<VisitTypesEntity>,
+    @InjectRepository(PatientEntity)
+    private patientRepository: Repository<PatientEntity>,
   ) {}
 
   async showAll(): Promise<VisitRO[]> {
@@ -26,6 +32,8 @@ export class VisitService {
       return this.toResponseObject(visit);
     });
   }
+
+  // need to hide doctor login and password in response object
   async showOne(id: string): Promise<VisitRO> {
     const visit = await this.visitRepostitory.findOne({
       where: { id },
@@ -94,8 +102,9 @@ export class VisitService {
   private toResponseObject(visit: VisitEntity): VisitRO {
     return {
       ...visit,
-      doctor: visit.doctor, // .toResponseObject(false),
-      visitType: visit,
+      doctor: visit.doctor,
+      visitType: visit.visitType,
+      patient: visit.patient,
     };
   }
   // need to add minimum breaks beeteween patients 15 min
@@ -158,5 +167,38 @@ export class VisitService {
       'This date and time of your visit already exists!',
       HttpStatus.BAD_REQUEST,
     );
+  }
+
+  async undoVisit(patientId, id) {
+    return true;
+  }
+  // need to add response object
+  async reserveVisit(patientId: string, visitId: string): Promise<VisitDTO> {
+    const patient = await this.patientRepository.findOne({
+      where: { id: patientId },
+    });
+
+    let visit = await this.visitRepostitory.findOne({
+      where: { id: visitId },
+      relations: ['doctor'],
+    });
+
+    if (!visit) {
+      throw new HttpException('Visit does not exist!', HttpStatus.BAD_REQUEST);
+    }
+
+    await this.checkIfVisitAvailable(visit);
+    visit = { ...visit, patient };
+
+    await this.visitRepostitory.save(visit);
+    return visit;
+  }
+
+  private async checkIfVisitAvailable(visit: VisitEntity): Promise<boolean> {
+    if (visit.available) {
+      visit.available = false;
+      return true;
+    }
+    throw new HttpException('Visit is not available', HttpStatus.BAD_REQUEST);
   }
 }

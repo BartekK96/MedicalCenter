@@ -108,7 +108,7 @@ export class DoctorEntity {
         role,
       },
       process.env.SECRET,
-      { expiresIn: '12h' },
+      { expiresIn: '7d' },
     );
   }
 }

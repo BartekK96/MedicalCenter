@@ -1,12 +1,19 @@
-import { Injectable, HttpStatus, HttpException } from '@nestjs/common';
+import {
+  Injectable,
+  HttpStatus,
+  HttpException,
+  UseGuards,
+} from '@nestjs/common';
 import { VisitTypesEntity } from './visitTypes.entity';
 import { Repository } from 'typeorm';
 import { VisitEntity } from '../visit/visit.entity';
 import { DoctorEntity } from '../doctor/doctor.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { VisitTypeRO } from './visitTypes.ro';
+import { AuthGuard } from '../shared/auth.guard';
 
 @Injectable()
+@UseGuards(new AuthGuard())
 export class VisitTypesService {
   constructor(
     @InjectRepository(VisitEntity)

@@ -5,12 +5,17 @@ import {
   CreateDateColumn,
   ManyToOne,
   UpdateDateColumn,
+  OneToOne,
+  JoinColumn,
 } from 'typeorm';
 import { DoctorEntity } from '../doctor/doctor.entity';
 import { VisitRO } from './visit.ro';
 import { VisitTypesEntity } from '../visitTypes/visitTypes.entity';
 import { VisitTypeRO } from '../visitTypes/visitTypes.ro';
 import { DoctorRO } from '../doctor/doctor.ro';
+import { Patient } from '../patient/patient.decorator';
+import { PatientRO } from '../patient/patient.ro';
+import { PatientEntity } from '../patient/patient.entity';
 
 @Entity()
 export class VisitEntity {
@@ -37,7 +42,11 @@ export class VisitEntity {
   @ManyToOne(type => VisitTypesEntity, type => type.visits)
   visitType: VisitTypesEntity;
 
-  toResponseObject(): VisitRO {
+  @OneToOne(type => PatientEntity)
+  @JoinColumn()
+  patient: PatientEntity;
+
+  toResponseObject?(): VisitRO {
     const {
       id,
       created,
@@ -45,10 +54,11 @@ export class VisitEntity {
       date,
       time,
       available,
+      patient,
       visitType,
       doctor,
     } = this;
-    const responseObject: any = {
+    const responseObject: VisitRO = {
       id,
       created,
       update,
@@ -57,6 +67,7 @@ export class VisitEntity {
       available,
       visitType,
       doctor,
+      patient,
     };
     return responseObject;
   }

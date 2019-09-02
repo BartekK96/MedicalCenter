@@ -4,10 +4,13 @@ import {
   CreateDateColumn,
   Column,
   BeforeInsert,
+  OneToMany,
 } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 import * as jwt from 'jsonwebtoken';
 import { PatientRO } from './patient.ro';
+import { UserRole } from '../shared/roles.users';
+import { VisitEntity } from '../visit/visit.entity';
 
 @Entity('patient')
 export class PatientEntity {
@@ -35,24 +38,39 @@ export class PatientEntity {
 
   @Column('text')
   password: string;
-  // Before insert have no will to work! why???
+
+  @Column({
+    type: 'enum',
+    enum: UserRole,
+    default: UserRole.PATIENT,
+  })
+  role: UserRole;
+
+  @OneToMany(type => VisitEntity, visitObject => visitObject.patient, {
+    cascade: true,
+  })
+  visits: VisitEntity[];
+
   @BeforeInsert()
   async hashPassword() {
     this.password = await bcrypt.hash(this.password, 10);
   }
 
   toResponseObject(showToken: boolean = true): PatientRO {
-    const { id, created, firstName, lastName, login, token } = this;
-    const responseObject = {
+    const { id, created, firstName, lastName, role, token, visits } = this;
+    let responseObject: PatientRO = {
       id,
       created,
       firstName,
       lastName,
-      login,
-      token,
+      role,
     };
+
     if (showToken) {
-      responseObject.token = token;
+      responseObject = { ...responseObject, token };
+    }
+    if (this.visits) {
+      responseObject.visits = this.visits;
     }
 
     return responseObject;
@@ -62,14 +80,15 @@ export class PatientEntity {
   }
 
   private get token() {
-    const { id, login } = this;
+    const { id, login, role } = this;
     return jwt.sign(
       {
         id,
         login,
+        role,
       },
       process.env.SECRET,
-      { expiresIn: '12h' },
+      { expiresIn: '7d' },
     );
   }
 }

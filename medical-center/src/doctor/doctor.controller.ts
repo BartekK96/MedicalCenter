@@ -19,10 +19,12 @@ export class DoctorController {
   constructor(private doctorService: DoctorService) {}
 
   @Get()
+  @UseGuards(new AuthGuard())
   showAllDoctors() {
     return this.doctorService.showAll();
   }
   @Get(':id')
+  @UseGuards(new AuthGuard())
   showOneDoctor(@Param('id') id: string) {
     return this.doctorService.showOneDoctor(id);
   }
