@@ -37,12 +37,21 @@ export class VisitService {
   async showOne(id: string): Promise<VisitRO> {
     const visit = await this.visitRepostitory.findOne({
       where: { id },
-      relations: ['doctor'],
+      relations: ['doctor', 'patient', 'visitType'],
     });
     if (!visit) {
       throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     }
     return this.toResponseObject(visit);
+  }
+
+  private toResponseObject(visit: VisitEntity): any {
+    return {
+      ...visit,
+      doctor: visit.doctor.toResponseObject(false),
+      visitType: visit.visitType,
+      patient: visit.patient.toResponseObject(false),
+    };
   }
 
   async showOneDoctorVisits(id: string) {
@@ -99,14 +108,14 @@ export class VisitService {
     return visit;
   }
 
-  private toResponseObject(visit: VisitEntity): VisitRO {
-    return {
-      ...visit,
-      doctor: visit.doctor,
-      visitType: visit.visitType,
-      patient: visit.patient,
-    };
-  }
+  // private toResponseObject(visit: VisitEntity): VisitRO {
+  //   return {
+  //     ...visit,
+  //     doctor: visit.doctor,
+  //     visitType: visit.visitType,
+  //     patient: visit.patient,
+  //   };
+  // }
   // need to add minimum breaks beeteween patients 15 min
   async create(doctorId: string, data: VisitEntity): Promise<VisitEntity> {
     // <VisitRO>
@@ -118,7 +127,7 @@ export class VisitService {
 
     const visit = await this.visitRepostitory.create({
       ...data,
-      doctor: doc.toResponseObject(false), // .toResponseObject(false),
+      doctor: doc.toResponseObject(),
       visitType: type,
     });
 

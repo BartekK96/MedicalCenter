@@ -1,4 +1,5 @@
 import { VisitEntity } from '../visit/visit.entity';
+import { UserRole } from '../shared/roles.users';
 
 export class PatientRO {
   id: string;
@@ -6,7 +7,7 @@ export class PatientRO {
   firstName: string;
   lastName: string;
   login?: string;
-  role: string;
+  role: UserRole;
   visits?: VisitEntity[];
   token?: string;
 }

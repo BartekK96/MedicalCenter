@@ -4,6 +4,7 @@ import { VisitEntity } from './visit.entity';
 import { PatientRO } from '../patient/patient.ro';
 import { VisitTypesEntity } from '../visitTypes/visitTypes.entity';
 import { PatientEntity } from 'src/patient/patient.entity';
+import { DoctorEntity } from 'src/doctor/doctor.entity';
 
 export class VisitRO {
   id?: string;
@@ -13,6 +14,6 @@ export class VisitRO {
   time: string;
   available: boolean;
   visitType: VisitTypesEntity;
-  doctor: DoctorRO;
+  doctor: DoctorEntity;
   patient?: PatientEntity;
 }

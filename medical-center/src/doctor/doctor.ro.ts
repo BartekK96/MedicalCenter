@@ -1,4 +1,5 @@
 import { VisitEntity } from '../visit/visit.entity';
+import { UserRole } from '../shared/roles.users';
 
 export class DoctorRO {
   id: string;
@@ -7,7 +8,7 @@ export class DoctorRO {
   lastName: string;
   specialization: string;
   login?: string;
-  role: string;
+  role: UserRole;
   visits?: VisitEntity[];
   token?: string;
 }

@@ -23,19 +23,20 @@ import { Patient } from '../patient/patient.decorator';
 export class VisitController {
   constructor(private visitService: VisitService) {}
 
-  @Get(':id')
+  @Get('/visit/:id')
   showVisit(@Param('id') id: string) {
     return this.visitService.showOne(id);
   }
 
   // it should show only available vists in future
-  @Get('/types')
+  @Get('types')
   showAllVisitsType() {
     return this.visitService.showAllTypes();
   }
   // it should show only available vists in future
   @Get('/types/:id')
   showOneTypeAllVisits(@Param('id') id: string) {
+
     return this.visitService.showOneType(id);
   }
   @Get('/doctors/:id')
