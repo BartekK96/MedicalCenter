@@ -2,15 +2,12 @@ import {
   Controller,
   Get,
   Post,
-  Put,
-  Delete,
   Body,
   Param,
   UsePipes,
   UseGuards,
 } from '@nestjs/common';
 import { VisitService } from './visit.service';
-import { VisitDTO } from './visit.dto';
 import { ValidationPipe } from '../shared/validation.pipe';
 import { AuthGuard } from '../shared/auth.guard';
 import { Doctor } from '../doctor/doctor.decorator';
@@ -36,10 +33,9 @@ export class VisitController {
   // it should show only available vists in future
   @Get('/types/:id')
   showOneTypeAllVisits(@Param('id') id: string) {
-
     return this.visitService.showOneType(id);
   }
-  @Get('/doctors/:id')
+  @Get('/doctor/:id')
   showAllOneDoctorVisits(@Param('id') id: string) {
     return this.visitService.showOneDoctorVisits(id);
   }

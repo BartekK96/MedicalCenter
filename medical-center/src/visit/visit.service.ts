@@ -8,10 +8,6 @@ import { DoctorEntity } from '../doctor/doctor.entity';
 import { VisitTypesEntity } from '../visitTypes/visitTypes.entity';
 import { VisitTypeRO } from '../visitTypes/visitTypes.ro';
 import { PatientEntity } from '../patient/patient.entity';
-import { booleanLiteral } from '@babel/types';
-import { PatientRO } from '../patient/patient.ro';
-
-// need to upgrade response object
 
 @Injectable()
 export class VisitService {
@@ -33,7 +29,6 @@ export class VisitService {
     });
   }
 
-  // need to hide doctor login and password in response object
   async showOne(id: string): Promise<VisitRO> {
     const visit = await this.visitRepostitory.findOne({
       where: { id },
@@ -46,12 +41,21 @@ export class VisitService {
   }
 
   private toResponseObject(visit: VisitEntity): any {
-    return {
-      ...visit,
-      doctor: visit.doctor.toResponseObject(false),
-      visitType: visit.visitType,
-      patient: visit.patient.toResponseObject(false),
-    };
+    if (visit.patient !== null) {
+      return {
+        ...visit,
+        doctor: visit.doctor.toResponseObject(false),
+        visitType: visit.visitType,
+        patient: visit.patient.toResponseObject(false),
+      };
+    } else {
+      return {
+        ...visit,
+        doctor: visit.doctor.toResponseObject(false),
+        visitType: visit.visitType,
+        patient: null,
+      };
+    }
   }
 
   async showOneDoctorVisits(id: string) {
@@ -70,17 +74,20 @@ export class VisitService {
   }
 
   async showOneType(id: string): Promise<VisitRO[]> {
-    const type = await this.visitTypeRepository.findOne({ where: { id } });
+    const type = await this.visitTypeRepository.findOne({
+      where: { id },
+    });
 
     const visits = await this.visitRepostitory.find({
       where: { visitType: type },
+      relations: ['doctor', 'patient', 'visitType'],
     });
     if (visits) {
       return visits.map(visit => {
         return this.toResponseObject(visit);
       });
     }
-    return [];
+    throw new HttpException('Not found any visits!', HttpStatus.NOT_FOUND);
   }
 
   async update(id: string, data: Partial<VisitDTO>): Promise<VisitRO> {
@@ -116,9 +123,9 @@ export class VisitService {
   //     patient: visit.patient,
   //   };
   // }
+
   // need to add minimum breaks beeteween patients 15 min
   async create(doctorId: string, data: VisitEntity): Promise<VisitEntity> {
-    // <VisitRO>
     const doc = await this.doctorRepository.findOne({
       where: { id: doctorId },
     });
@@ -178,10 +185,59 @@ export class VisitService {
     );
   }
 
-  async undoVisit(patientId, id) {
-    return true;
+  async undoVisit(patientId: string, visitId: string) {
+    const patient = await this.patientRepository.findOne({
+      where: { id: patientId },
+    });
+
+    let visit = await this.visitRepostitory.findOne({
+      where: { id: visitId },
+      relations: ['patient'],
+    });
+
+    if (!visit) {
+      throw new HttpException('Visit does not exist!', HttpStatus.BAD_REQUEST);
+    }
+
+    await this.checkIfVisitBelongsToPatient(visit, patient);
+    visit = await this.visitRepostitory.findOne({
+      where: { id: visitId },
+      relations: ['doctor', 'visitType'],
+    });
+    visit = await this.removeVisitFromPatient(visit, patient);
+
+    return this.toResponseObject(visit);
   }
-  // need to add response object
+  private async checkIfVisitBelongsToPatient(
+    visit: VisitEntity,
+    patient: PatientEntity,
+  ): Promise<boolean> {
+    if (visit.patient === null) {
+      throw new HttpException(
+        'None of patients are asign to this visit!',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    if (visit.patient.id === patient.id) {
+      return true;
+    }
+    throw new HttpException(
+      'This visit does not belongs to You!',
+      HttpStatus.BAD_REQUEST,
+    );
+  }
+  private async removeVisitFromPatient(
+    visit: VisitEntity,
+    patient: PatientEntity,
+  ): Promise<any> {
+    delete visit.update;
+    visit.available = true;
+    const updatedVisit = { ...visit, patient: null };
+
+    await this.visitRepostitory.update({ id: visit.id }, updatedVisit);
+
+    return updatedVisit;
+  }
   async reserveVisit(patientId: string, visitId: string): Promise<VisitDTO> {
     const patient = await this.patientRepository.findOne({
       where: { id: patientId },
