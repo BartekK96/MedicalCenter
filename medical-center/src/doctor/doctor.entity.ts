@@ -11,6 +11,7 @@ import * as jwt from 'jsonwebtoken';
 import { DoctorRO } from './doctor.ro';
 import { VisitEntity } from '../visit/visit.entity';
 import { UserRole } from '../shared/roles.users';
+import { CommentEntity } from '../comment/comment.entity';
 
 @Entity('doctor')
 export class DoctorEntity {
@@ -55,6 +56,11 @@ export class DoctorEntity {
     cascade: true,
   })
   visits: VisitEntity[];
+
+  @OneToMany(type => CommentEntity, comment => comment.patient, {
+    cascade: true,
+  })
+  comments: CommentEntity[];
 
   @BeforeInsert()
   async hashPassword() {

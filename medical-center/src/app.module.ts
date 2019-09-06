@@ -11,6 +11,7 @@ import { HttpErrorFilter } from './shared/http-error.filter';
 import { LoggingInterceptor } from './shared/logging.interceptor';
 import { DoctorModule } from './doctor/doctor.module';
 import { VisitTypesModule } from './visitTypes/visitTypes.module';
+import { CommentModule } from './comment/comment.module';
 
 // import 'reflect-metadata';
 
@@ -21,6 +22,7 @@ import { VisitTypesModule } from './visitTypes/visitTypes.module';
     PatientModule,
     DoctorModule,
     VisitTypesModule,
+    CommentModule,
   ],
   controllers: [AppController],
   providers: [

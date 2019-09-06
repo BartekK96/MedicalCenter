@@ -115,15 +115,6 @@ export class VisitService {
     return visit;
   }
 
-  // private toResponseObject(visit: VisitEntity): VisitRO {
-  //   return {
-  //     ...visit,
-  //     doctor: visit.doctor,
-  //     visitType: visit.visitType,
-  //     patient: visit.patient,
-  //   };
-  // }
-
   // need to add minimum breaks beeteween patients 15 min
   async create(doctorId: string, data: VisitEntity): Promise<VisitEntity> {
     const doc = await this.doctorRepository.findOne({
@@ -139,7 +130,7 @@ export class VisitService {
     });
 
     await this.visitRepostitory.save(visit);
-    return visit; // this.toResponseObject(visit);
+    return visit;
   }
   private async checkIfVisitTypeExist(
     data: VisitEntity,
@@ -256,7 +247,7 @@ export class VisitService {
     visit = { ...visit, patient };
 
     await this.visitRepostitory.save(visit);
-    return visit;
+    return this.toResponseObject(visit);
   }
 
   private async checkIfVisitAvailable(visit: VisitEntity): Promise<boolean> {
