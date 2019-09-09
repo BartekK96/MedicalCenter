@@ -45,6 +45,7 @@ export class DoctorController {
   showOneDoctorComment(@Param('id') id: string) {
     return this.commentService.showOneDoctorComments(id);
   }
+
   // only patient can add, upgrade or delete a comment
   @Post('/doctor/:id')
   @UseGuards(new AuthGuard())
@@ -61,20 +62,16 @@ export class DoctorController {
   @UseGuards(new AuthGuard())
   @UsePipes(new ValidationPipe())
   updateComment(
-    @Param('id') doctorId: string,
-    @Patient('id') patientId: string,
+    @Param('id') commentId: string,
     @Body() data: Partial<CommentDTO>,
   ) {
-    return this.commentService.updateComment(doctorId, patientId, data);
+    return this.commentService.updateComment(commentId, data);
   }
 
   @Delete('/doctor/:id')
   @UseGuards(new AuthGuard())
-  deleteComment(
-    @Param('id') doctorId: string,
-    @Patient('id') patientId: string,
-  ) {
-    return this.commentService.deleteComment(doctorId, patientId);
+  deleteComment(@Param('id') commentId: string) {
+    return this.commentService.deleteComment(commentId);
   }
 
   @Post('login')

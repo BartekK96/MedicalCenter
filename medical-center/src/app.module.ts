@@ -13,11 +13,15 @@ import { DoctorModule } from './doctor/doctor.module';
 import { VisitTypesModule } from './visitTypes/visitTypes.module';
 import { CommentModule } from './comment/comment.module';
 
-// import 'reflect-metadata';
+import { GraphQLModule } from '@nestjs/graphql';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot(),
+    // GraphQLModule.forRoot({
+    //   typePaths: ['./**/*.graphql'],
+    //   context: ({ req }) => ({ headers: req.headers }),
+    // }),
     VisitModule,
     PatientModule,
     DoctorModule,

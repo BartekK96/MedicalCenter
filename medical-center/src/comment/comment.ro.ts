@@ -7,6 +7,7 @@ export class CommentRO {
   created: Date;
   updated: Date;
   comment: string;
+  mark: number;
   patient: PatientEntity;
   doctor: DoctorEntity;
 }

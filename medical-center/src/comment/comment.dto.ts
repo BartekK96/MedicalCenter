@@ -4,9 +4,12 @@ export class CommentDTO {
   @IsNotEmpty()
   comment: string;
 
-  @IsNotEmpty()
-  patient: string;
+  // @IsNotEmpty()
+  // patient: string;
+
+  // @IsNotEmpty()
+  // doctor: string;
 
   @IsNotEmpty()
-  doctor: string;
+  mark: number;
 }

@@ -25,10 +25,13 @@ export class CommentEntity {
   @Column('text')
   comment: string;
 
+  @Column('int')
+  mark: number;
+
   @ManyToOne(type => PatientEntity, patient => patient.comments)
   patient: PatientEntity;
 
-  @OneToOne(type => DoctorEntity)
-  @JoinColumn()
+  @ManyToOne(type => DoctorEntity)
+  // @JoinColumn()
   doctor: DoctorEntity;
 }
