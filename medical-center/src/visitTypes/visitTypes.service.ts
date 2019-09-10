@@ -26,6 +26,9 @@ export class VisitTypesService {
 
   async showAll(): Promise<VisitTypeRO[]> {
     const types = await this.visitTypeRepository.find();
+    if (!types) {
+      return [];
+    }
     return types.map(type => {
       return this.toResponseObject(type);
     });
@@ -41,12 +44,12 @@ export class VisitTypesService {
     return this.toResponseObject(type);
   }
   // Only admin can create new one, update or delete
-  async createOne(data): Promise<VisitTypeRO> {
+  async createOne(data: VisitTypeRO): Promise<VisitTypesEntity> {
     const type = await this.visitTypeRepository.create({
       ...data,
     });
     await this.visitTypeRepository.save(type);
-    return data;
+    return type;
   }
 
   // updateOne

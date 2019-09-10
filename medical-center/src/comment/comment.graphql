@@ -1,0 +1,24 @@
+type Comment {
+  id: ID!
+  created: String!
+  updated: String!
+  comment: String!
+  mark: Int!
+  #   doctor: Doctor
+  #   patient: Patient
+}
+
+type Query {
+  comment(id: ID!): Comment
+}
+
+type Mutation {
+  createComment(
+    patient: ID!
+    doctor: ID!
+    comment: String!
+    mark: Int!
+  ): Comment
+  deleteComment(id: ID!): Comment
+  updateComment(id: String!, comment: String, mark: Int): Comment
+}

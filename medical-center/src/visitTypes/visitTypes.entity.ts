@@ -21,7 +21,7 @@ export class VisitTypesEntity {
   @OneToMany(type => VisitEntity, visit => visit.visitType)
   visits: VisitEntity[];
 
-  toResponseObject(): VisitTypeRO {
+  toResponseObject?(): VisitTypeRO {
     const { id, specialization, visitType } = this;
     const responseObject = { id, specialization, visitType };
     return responseObject;

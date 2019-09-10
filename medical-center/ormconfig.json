@@ -1,11 +1,28 @@
-{
-  "type": "postgres",
-  "host": "localhost",
-  "port": 5432,
-  "username": "postgres",
-  "password": "kus",
-  "database": "center",
-  "synchronize": true,
-  "logging": true,
-  "entities": ["./dist/**/*.entity.js"]
-}
+[
+  {
+    "name": "default",
+    "type": "postgres",
+    "host": "localhost",
+    "port": 5432,
+    "username": "postgres",
+    "password": "kus",
+    "database": "center",
+    "synchronize": true,
+    "dropSchema": true,
+    "logging": true,
+    "entities": ["./dist/**/*.entity.js"]
+  },
+  {
+    "name": "test",
+    "type": "postgres",
+    "host": "localhost",
+    "port": 5432,
+    "username": "postgres",
+    "password": "kus",
+    "database": "center",
+    "synchronize": true,
+    "logging": false,
+    "dropSchema": true,
+    "entities": ["./dist/**/*.entity.js"]
+  }
+]

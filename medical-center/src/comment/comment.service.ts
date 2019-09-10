@@ -60,7 +60,6 @@ export class CommentService {
     return this.toResponseObject(comment);
   }
 
-  // need to resolve deepPartial Error
   async updateComment(
     commentId: string,
     data: Partial<CommentDTO>,

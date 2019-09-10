@@ -1,0 +1,27 @@
+# type Doctor {
+#   id: ID!
+#   firstName: String!
+#   lastName: String!
+#   created: String!
+#   specialization: String!
+#   visits: [Visit!]
+#   comments: [Comment!]
+# }
+
+# type Auth {
+#   login: String!
+#   token: String!
+# }
+
+# type Query{
+#     doctors:[Doctor!]
+#     doctor:(id:String!):Doctor
+#     whoami:Doctor
+# }
+
+# type Mutation{
+#     login(login:String!,password:String!):Auth!
+#     register(login:String!,password:String!):Auth!
+#     getComments(id:String!):[Comment!]
+
+# }
