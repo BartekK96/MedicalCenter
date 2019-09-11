@@ -4,7 +4,6 @@ import { VisitTypeDTO } from 'src/visitTypes/visitTypes.dto';
 import * as request from 'supertest';
 import { app, createConn } from './constants';
 import { PatientRegisterDTO } from 'src/patient/patientRegister.dto';
-import { response } from 'express';
 
 // need to add admins authorization tests in future
 
@@ -30,7 +29,7 @@ beforeAll(async () => {
     data: { token },
   } = await axios.post(`${app}/doctors/register`, doctor);
   doctorToken = token;
-  const patientData = await axios.post(`${app}/patients/register`, doctor);
+  const patientData = await axios.post(`${app}/patients/register`, patient);
   patientToken = patientData.data.token;
 });
 

@@ -5,6 +5,7 @@ import {
   Column,
   BeforeInsert,
   OneToMany,
+  JoinColumn,
 } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 import * as jwt from 'jsonwebtoken';
@@ -55,6 +56,7 @@ export class PatientEntity {
   @OneToMany(type => CommentEntity, comment => comment.patient, {
     cascade: true,
   })
+ // @JoinColumn()
   comments: CommentEntity[];
 
   @BeforeInsert()

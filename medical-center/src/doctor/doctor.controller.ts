@@ -19,6 +19,7 @@ import { CommentService } from '../comment/comment.service';
 import { Patient } from '../patient/patient.decorator';
 import { CommentEntity } from '../comment/comment.entity';
 import { CommentDTO } from '../comment/comment.dto';
+import { PatientGuard } from '../shared/patient.guard ';
 
 @Controller('doctors')
 export class DoctorController {
@@ -40,7 +41,7 @@ export class DoctorController {
     return this.doctorService.showOneDoctor(id);
   }
 
-  @Get('/doctor/:id/comment')
+  @Get('/doctor/comments/:id')
   @UseGuards(new AuthGuard())
   showOneDoctorComment(@Param('id') id: string) {
     return this.commentService.showOneDoctorComments(id);
@@ -48,7 +49,7 @@ export class DoctorController {
 
   // only patient can add, upgrade or delete a comment
   @Post('/doctor/:id')
-  @UseGuards(new AuthGuard())
+  @UseGuards(new AuthGuard(), PatientGuard)
   @UsePipes(new ValidationPipe())
   addComment(
     @Param('id') doctorId: string,
@@ -59,7 +60,7 @@ export class DoctorController {
   }
 
   @Put('/doctor/:id')
-  @UseGuards(new AuthGuard())
+  @UseGuards(new AuthGuard(), PatientGuard)
   @UsePipes(new ValidationPipe())
   updateComment(
     @Param('id') commentId: string,
@@ -69,7 +70,7 @@ export class DoctorController {
   }
 
   @Delete('/doctor/:id')
-  @UseGuards(new AuthGuard())
+  @UseGuards(new AuthGuard(), PatientGuard)
   deleteComment(@Param('id') commentId: string) {
     return this.commentService.deleteComment(commentId);
   }

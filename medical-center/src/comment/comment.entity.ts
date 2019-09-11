@@ -32,6 +32,5 @@ export class CommentEntity {
   patient: PatientEntity;
 
   @ManyToOne(type => DoctorEntity)
-  // @JoinColumn()
   doctor: DoctorEntity;
 }

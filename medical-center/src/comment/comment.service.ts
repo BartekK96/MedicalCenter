@@ -1,10 +1,11 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DoctorEntity } from '../doctor/doctor.entity';
 import { Repository } from 'typeorm';
 import { CommentEntity } from './comment.entity';
 import { PatientEntity } from '../patient/patient.entity';
 import { CommentDTO } from './comment.dto';
+import { map } from 'rxjs/operators';
 
 @Injectable()
 export class CommentService {
@@ -27,7 +28,12 @@ export class CommentService {
   async showOneDoctorComments(id: string): Promise<CommentEntity[]> {
     const doctor = await this.doctorRepository.findOne({ where: { id } });
     const comments = doctor.comments;
-    return comments;
+    if (!comments) {
+      return [];
+    }
+    return comments.map(comment => {
+      return this.toResponseObject(comment);
+    });
   }
   async addComment(
     doctorId: string,
@@ -37,12 +43,19 @@ export class CommentService {
     const doctor = await this.doctorRepository.findOne({
       where: { id: doctorId },
     });
-
     if (!doctor) {
       throw new HttpException('Doctor does not exist!', HttpStatus.BAD_REQUEST);
     }
-    const patient = await this.patientRepository.findOne({
+
+    const patient = await this.patientRepository.find({
       where: { id: patientId },
+      join: {
+        alias: 'patient',
+        leftJoinAndSelect: {
+          comments: 'patient.comments',
+          doctor: 'comments.doctor',
+        },
+      },
     });
 
     if (!patient) {
@@ -51,9 +64,25 @@ export class CommentService {
         HttpStatus.BAD_REQUEST,
       );
     }
+    // check if comment is already added to doctor
+    const doctors = patient.map(pat => {
+      return pat.comments.map(com => {
+        return com.doctor.id;
+      });
+    });
+
+    if (doctors[0].includes(doctorId)) {
+      throw new HttpException(
+        'You already add comment to this doctor!',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    const responsePatient = await this.patientRepository.findOne({
+      where: { id: patientId },
+    });
     const comment = await this.commentRepository.create({
       ...data,
-      patient: patient.toResponseObject(false),
+      patient: responsePatient.toResponseObject(false),
       doctor: doctor.toResponseObject(false),
     });
     await this.commentRepository.save(comment);
