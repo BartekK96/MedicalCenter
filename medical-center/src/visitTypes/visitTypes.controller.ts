@@ -22,6 +22,7 @@ export class VisitTypesController {
   showOneType(@Param('id') id: string) {
     return this.VisitTypeService.showOne(id);
   }
+  // only admins can create ,update or delete visitType(need to add in future this option)
   @Post()
   @UsePipes(new ValidationPipe())
   createVisitType(@Body() data: VisitTypeDTO) {

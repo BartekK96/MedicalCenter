@@ -4,6 +4,7 @@ import {
   PrimaryGeneratedColumn,
   OneToMany,
   PrimaryColumn,
+  JoinColumn,
 } from 'typeorm';
 import { VisitEntity } from '../visit/visit.entity';
 import { VisitTypeRO } from './visitTypes.ro';
@@ -18,7 +19,7 @@ export class VisitTypesEntity {
   @Column('text')
   visitType: string;
 
-  @OneToMany(type => VisitEntity, visit => visit.visitType)
+  @OneToMany(type => VisitEntity, visit => visit.visitType, { nullable: true })
   visits: VisitEntity[];
 
   toResponseObject?(): VisitTypeRO {

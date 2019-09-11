@@ -11,6 +11,7 @@ import { DoctorEntity } from '../doctor/doctor.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { VisitTypeRO } from './visitTypes.ro';
 import { AuthGuard } from '../shared/auth.guard';
+import { find } from 'rxjs/operators';
 
 @Injectable()
 @UseGuards(new AuthGuard())
@@ -34,17 +35,37 @@ export class VisitTypesService {
     });
   }
   async showOne(id: string): Promise<VisitTypeRO> {
-    const type = await this.visitTypeRepository.findOne({
+    let type = await this.visitTypeRepository.findOne({
       where: { id },
-      relations: ['visit'],
     });
     if (!type) {
       throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     }
+    // check if any visit of this type exist
+    const visits = await this.visitRepostitory.find({
+      where: [{ visitType: `${type.id}` }],
+    });
+    if (visits.length > 0) {
+      type = await this.visitTypeRepository.findOne({
+        where: { id },
+        relations: ['visits'],
+      });
+    }
+
     return this.toResponseObject(type);
   }
   // Only admin can create new one, update or delete
   async createOne(data: VisitTypeRO): Promise<VisitTypesEntity> {
+    const visitType = await this.visitTypeRepository.findOne({
+      where: { visitType: data.visitType },
+    });
+    if (visitType) {
+      throw new HttpException(
+        'Visit type already exists!',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
     const type = await this.visitTypeRepository.create({
       ...data,
     });
