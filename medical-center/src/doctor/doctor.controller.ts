@@ -64,15 +64,19 @@ export class DoctorController {
   @UsePipes(new ValidationPipe())
   updateComment(
     @Param('id') commentId: string,
+    @Patient('id') patientId: string,
     @Body() data: Partial<CommentDTO>,
   ) {
-    return this.commentService.updateComment(commentId, data);
+    return this.commentService.updateComment(commentId, patientId, data);
   }
 
   @Delete('/doctor/:id')
   @UseGuards(new AuthGuard(), PatientGuard)
-  deleteComment(@Param('id') commentId: string) {
-    return this.commentService.deleteComment(commentId);
+  deleteComment(
+    @Param('id') commentId: string,
+    @Patient('id') patientId: string,
+  ) {
+    return this.commentService.deleteComment(commentId, patientId);
   }
 
   @Post('login')

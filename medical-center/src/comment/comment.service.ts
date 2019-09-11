@@ -7,6 +7,8 @@ import { PatientEntity } from '../patient/patient.entity';
 import { CommentDTO } from './comment.dto';
 import { map } from 'rxjs/operators';
 
+// response object need to be upgraded
+
 @Injectable()
 export class CommentService {
   constructor(
@@ -91,11 +93,21 @@ export class CommentService {
 
   async updateComment(
     commentId: string,
+    patientId: string,
     data: Partial<CommentDTO>,
   ): Promise<CommentEntity> {
     let comment = await this.commentRepository.findOne({
       where: { id: commentId },
+      relations: ['patient'],
     });
+
+    if (comment.patient.id !== patientId) {
+      throw new HttpException(
+        'You do not own this comment',
+        HttpStatus.FORBIDDEN,
+      );
+    }
+
     if (!comment) {
       throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     }
@@ -105,12 +117,23 @@ export class CommentService {
     });
     return this.toResponseObject(comment);
   }
-  async deleteComment(commentId: string): Promise<CommentEntity> {
+
+  async deleteComment(
+    commentId: string,
+    patientId: string,
+  ): Promise<CommentEntity> {
     const comment = await this.commentRepository.findOne({
       where: { id: commentId },
+      relations: ['patient'],
     });
     if (!comment) {
       throw new HttpException('Not found', HttpStatus.NOT_FOUND);
+    }
+    if (comment.patient.id !== patientId) {
+      throw new HttpException(
+        'You do not own this comment',
+        HttpStatus.FORBIDDEN,
+      );
     }
     await this.commentRepository.delete({ id: commentId });
     return this.toResponseObject(comment);
