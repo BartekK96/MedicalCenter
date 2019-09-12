@@ -8,7 +8,7 @@
     "password": "kus",
     "database": "center",
     "synchronize": true,
-    "dropSchema": false,
+    "dropSchema": true,
     "logging": true,
     "entities": ["./dist/**/*.entity.js"]
   },
@@ -22,7 +22,7 @@
     "database": "center",
     "synchronize": true,
     "logging": false,
-    "dropSchema": false,
+    "dropSchema": true,
     "entities": ["./dist/**/*.entity.js"]
   }
 ]

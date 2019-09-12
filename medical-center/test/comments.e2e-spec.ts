@@ -7,35 +7,37 @@ import { PatientRegisterDTO } from 'src/patient/patientRegister.dto';
 import { CommentDTO } from 'src/comment/comment.dto';
 import { HttpStatus } from '@nestjs/common';
 
-// neeed to add additional check for each test which check response object
-
 let doctorToken: string;
 let doctorId: string;
-const doctor: DoctorRegisterDTO = {
-  firstName: 'doctorFirstName',
-  lastName: 'doctorLastName',
-  specialization: 'optist',
-  login: 'login2',
-  password: 'password',
-};
 let patientToken1: string;
 let patientId1: string;
-const patient: PatientRegisterDTO = {
-  firstName: 'patientFirstName',
-  lastName: 'patientLastName',
-  login: 'login2',
-  password: 'password',
-};
 let patientToken2: string;
 let patientId2: string;
-const patient2: PatientRegisterDTO = {
-  firstName: 'patientFirstName',
-  lastName: 'patientLastName',
-  login: 'login3',
-  password: 'password',
-};
+
 beforeAll(async () => {
   await createConn();
+
+  const doctor: DoctorRegisterDTO = {
+    firstName: 'doctorFirstName',
+    lastName: 'doctorLastName',
+    specialization: 'optist',
+    login: 'login2',
+    password: 'password',
+  };
+
+  const patient: PatientRegisterDTO = {
+    firstName: 'patientFirstName',
+    lastName: 'patientLastName',
+    login: 'login2',
+    password: 'password',
+  };
+
+  const patient2: PatientRegisterDTO = {
+    firstName: 'patientFirstName',
+    lastName: 'patientLastName',
+    login: 'login3',
+    password: 'password',
+  };
 
   const doctorData = await axios.post(`${app}/doctors/register`, doctor);
   doctorToken = doctorData.data.token;
@@ -69,19 +71,20 @@ describe('COMMENTS', () => {
     comment: 'Not ok',
   };
   let commentId: string;
-  it('should get all comments of one doctor', () => {
-    return request(app)
+  it('should get all comments of one doctor', async () => {
+    return await request(app)
       .get(`/doctors/doctor/comments/${doctorId}`)
       .set('auth', `JWT ${patientToken1}`)
       .expect(200);
   });
-  it('should add comment', () => {
-    return request(app)
+  it('should add comment', async () => {
+    return await request(app)
       .post(`/doctors/doctor/${doctorId}`)
       .set('auth', `JWT ${patientToken1}`)
       .set('Accept', 'application/json')
       .send(comment1)
       .expect(({ body }) => {
+        // console.log(body);
         expect(body.id).toBeDefined();
         commentId = body.id;
         expect(body.comment).toEqual(comment1.comment);

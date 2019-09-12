@@ -1,4 +1,4 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DoctorEntity } from './doctor.entity';
 import { Repository } from 'typeorm';
@@ -26,6 +26,7 @@ export class DoctorService {
 
   async register(data: DoctorRegisterDTO): Promise<DoctorRO> {
     const { login } = data;
+
     let doctor = await this.doctorRepository.findOne({
       where: { login },
     });

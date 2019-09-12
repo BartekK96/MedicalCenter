@@ -28,7 +28,7 @@ export class DoctorController {
     private commentService: CommentService,
   ) {}
 
-  // it should be change to doctors specialization
+  // it should be change to doctors specialization in future
   @Get()
   @UseGuards(new AuthGuard())
   showAllDoctors() {

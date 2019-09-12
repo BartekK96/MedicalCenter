@@ -7,23 +7,24 @@ import { PatientRegisterDTO } from 'src/patient/patientRegister.dto';
 
 // need to add admins authorization tests in future
 
-let doctorToken: string;
-let doctor: DoctorRegisterDTO = {
-  firstName: 'doctorFirsName',
-  lastName: 'doctorLastName',
-  specialization: 'optist',
-  login: 'login1',
-  password: 'password',
-};
-let patientToken: string;
-let patient: PatientRegisterDTO = {
-  firstName: 'patientFirstName',
-  lastName: 'patientLastName',
-  login: 'login1',
-  password: 'password',
-};
 beforeAll(async () => {
   await createConn();
+
+  let doctorToken: string;
+  const doctor: DoctorRegisterDTO = {
+    firstName: 'doctorFirsName',
+    lastName: 'doctorLastName',
+    specialization: 'optist',
+    login: 'login1',
+    password: 'password',
+  };
+  let patientToken: string;
+  const patient: PatientRegisterDTO = {
+    firstName: 'patientFirstName',
+    lastName: 'patientLastName',
+    login: 'login1',
+    password: 'password',
+  };
 
   const {
     data: { token },
