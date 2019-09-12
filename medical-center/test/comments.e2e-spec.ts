@@ -69,7 +69,7 @@ describe('COMMENTS', () => {
     comment: 'Not ok',
   };
   let commentId: string;
-  it('should get all comments of one docotr', () => {
+  it('should get all comments of one doctor', () => {
     return request(app)
       .get(`/doctors/doctor/comments/${doctorId}`)
       .set('auth', `JWT ${patientToken1}`)
@@ -164,25 +164,23 @@ describe('COMMENTS', () => {
         expect(body.message).toEqual('You do not own this comment');
       });
   });
-  it('should delete comment', () => {
-    return request(app)
-      .delete(`/doctors/doctor/${commentId}`)
-      .set('auth', `JWT ${patientToken1}`)
-      .set('Accept', 'application/json')
-      .expect(({ body }) => {
-        console.log(body);
-      })
-      .expect(200);
-  });
   it('should not delete comment - patient do not own it', () => {
     return request(app)
       .delete(`/doctors/doctor/${commentId}`)
       .set('auth', `JWT ${patientToken2}`)
       .set('Accept', 'application/json')
       .expect(({ body }) => {
-        console.log(body);
         expect(body.code).toEqual(HttpStatus.FORBIDDEN);
         expect(body.message).toEqual('You do not own this comment');
       });
+  });
+  it('should delete comment', async () => {
+    await axios.delete(`${app}/doctors/doctor/${commentId}`, {
+      headers: { auth: `JWT ${patientToken1}` },
+    });
+    return request(app)
+      .get(`/doctors/doctor/comments/${doctorId}`)
+      .set('auth', `JWT ${patientToken1}`)
+      .expect(200);
   });
 });

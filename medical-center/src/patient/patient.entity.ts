@@ -56,7 +56,7 @@ export class PatientEntity {
   @OneToMany(type => CommentEntity, comment => comment.patient, {
     cascade: true,
   })
- // @JoinColumn()
+  // @JoinColumn()
   comments: CommentEntity[];
 
   @BeforeInsert()
@@ -65,7 +65,16 @@ export class PatientEntity {
   }
 
   toResponseObject(showToken: boolean = true): PatientRO {
-    const { id, created, firstName, lastName, role, token, visits } = this;
+    const {
+      id,
+      created,
+      firstName,
+      lastName,
+      role,
+      token,
+      visits,
+      comments,
+    } = this;
     let responseObject: PatientRO = {
       id,
       created,

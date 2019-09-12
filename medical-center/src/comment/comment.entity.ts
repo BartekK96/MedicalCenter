@@ -7,9 +7,11 @@ import {
   ManyToOne,
   OneToOne,
   JoinColumn,
+  JoinTable,
 } from 'typeorm';
 import { PatientEntity } from '../patient/patient.entity';
 import { DoctorEntity } from '../doctor/doctor.entity';
+import { PatientRO } from '../patient/patient.ro';
 
 @Entity('comment')
 export class CommentEntity {
@@ -20,7 +22,7 @@ export class CommentEntity {
   created: Date;
 
   @UpdateDateColumn()
-  update: Date;
+  updated: Date;
 
   @Column('text')
   comment: string;

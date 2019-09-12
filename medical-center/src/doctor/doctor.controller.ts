@@ -47,7 +47,6 @@ export class DoctorController {
     return this.commentService.showOneDoctorComments(id);
   }
 
-  // only patient can add, upgrade or delete a comment
   @Post('/doctor/:id')
   @UseGuards(new AuthGuard(), PatientGuard)
   @UsePipes(new ValidationPipe())

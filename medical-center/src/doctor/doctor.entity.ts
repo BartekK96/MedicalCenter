@@ -5,6 +5,8 @@ import {
   Column,
   BeforeInsert,
   OneToMany,
+  JoinColumn,
+  JoinTable,
 } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 import * as jwt from 'jsonwebtoken';
@@ -57,7 +59,7 @@ export class DoctorEntity {
   })
   visits: VisitEntity[];
 
-  @OneToMany(type => CommentEntity, comment => comment.patient, {
+  @OneToMany(type => CommentEntity, comment => comment.doctor, {
     cascade: true,
   })
   comments: CommentEntity[];
@@ -73,7 +75,7 @@ export class DoctorEntity {
       firstName,
       lastName,
       specialization,
-      // login,
+
       visits,
       role,
       token,
@@ -86,12 +88,13 @@ export class DoctorEntity {
       lastName,
       specialization,
       visits,
-      // login,
+
       role,
     };
     if (this.visits) {
       responseObject.visits = this.visits;
     }
+
     let returnResponseObject;
     if (showToken) {
       returnResponseObject = { ...responseObject, token };

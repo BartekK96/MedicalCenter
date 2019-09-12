@@ -58,7 +58,7 @@ export class DoctorService {
   }
 
   private toResponseObject(doctor: DoctorEntity): DoctorRO {
-    return { ...doctor };
+    return doctor.toResponseObject(false);
   }
 
   async findDoctor(id: string): Promise<DoctorEntity> {

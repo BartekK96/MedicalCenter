@@ -5,9 +5,7 @@ import { Repository } from 'typeorm';
 import { CommentEntity } from './comment.entity';
 import { PatientEntity } from '../patient/patient.entity';
 import { CommentDTO } from './comment.dto';
-import { map } from 'rxjs/operators';
-
-// response object need to be upgraded
+import { CommentRO } from './comment.ro';
 
 @Injectable()
 export class CommentService {
@@ -19,29 +17,37 @@ export class CommentService {
     @InjectRepository(PatientEntity)
     private patientRepository: Repository<PatientEntity>,
   ) {}
-  private toResponseObject(comment: CommentEntity) {
-    return {
-      ...comment,
-      patient: comment.patient, // && comment.patient.toResponseObject(),
-      doctor: comment.doctor, // && comment.doctor.toResponseObject(),
-    };
-  }
 
   async showOneDoctorComments(id: string): Promise<CommentEntity[]> {
-    const doctor = await this.doctorRepository.findOne({ where: { id } });
-    const comments = doctor.comments;
-    if (!comments) {
+    const doctor = await this.doctorRepository.find({
+      where: { id },
+      join: {
+        alias: 'doctor',
+        leftJoinAndSelect: {
+          comments: 'doctor.comments',
+        },
+      },
+    });
+
+    if (!doctor) {
+      throw new HttpException('Doctor does not exist!', HttpStatus.BAD_REQUEST);
+    }
+
+    const comments = doctor.map(doc => {
+      return doc.comments[0];
+    });
+    if (comments.length < 1) {
       return [];
     }
-    return comments.map(comment => {
-      return this.toResponseObject(comment);
+    return comments.map(com => {
+      return com;
     });
   }
   async addComment(
     doctorId: string,
     patientId: string,
     data: CommentDTO,
-  ): Promise<CommentEntity> {
+  ): Promise<CommentRO> {
     const doctor = await this.doctorRepository.findOne({
       where: { id: doctorId },
     });
@@ -73,12 +79,15 @@ export class CommentService {
       });
     });
 
-    if (doctors[0].includes(doctorId)) {
-      throw new HttpException(
-        'You already add comment to this doctor!',
-        HttpStatus.BAD_REQUEST,
-      );
+    if (doctors.length > 0) {
+      if (doctors[0].includes(doctorId)) {
+        throw new HttpException(
+          'You already add comment to this doctor!',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
     }
+
     const responsePatient = await this.patientRepository.findOne({
       where: { id: patientId },
     });
@@ -115,13 +124,13 @@ export class CommentService {
     comment = await this.commentRepository.findOne({
       where: { id: commentId },
     });
-    return this.toResponseObject(comment);
+    return comment;
   }
 
   async deleteComment(
     commentId: string,
     patientId: string,
-  ): Promise<CommentEntity> {
+  ): Promise<CommentRO> {
     const comment = await this.commentRepository.findOne({
       where: { id: commentId },
       relations: ['patient'],
@@ -136,6 +145,20 @@ export class CommentService {
       );
     }
     await this.commentRepository.delete({ id: commentId });
+
     return this.toResponseObject(comment);
+  }
+  private toResponseObject(comment: CommentEntity): any {
+    if (comment.doctor) {
+      return {
+        ...comment,
+        patient: comment.patient.toResponseObject(false),
+        doctor: comment.doctor.toResponseObject(false),
+      };
+    }
+    return {
+      ...comment,
+      patient: comment.patient.toResponseObject(false),
+    };
   }
 }
