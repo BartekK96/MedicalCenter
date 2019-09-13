@@ -4,13 +4,13 @@ import { VisitTypeDTO } from 'src/visitTypes/visitTypes.dto';
 import * as request from 'supertest';
 import { app, createConn } from './constants';
 import { PatientRegisterDTO } from 'src/patient/patientRegister.dto';
+import { HttpCode, HttpStatus } from '@nestjs/common';
 
-// need to add admins authorization tests in future
-
+let doctorToken: string;
+let patientToken: string;
 beforeAll(async () => {
   await createConn();
 
-  let doctorToken: string;
   const doctor: DoctorRegisterDTO = {
     firstName: 'doctorFirsName',
     lastName: 'doctorLastName',
@@ -18,7 +18,7 @@ beforeAll(async () => {
     login: 'login1',
     password: 'password',
   };
-  let patientToken: string;
+
   const patient: PatientRegisterDTO = {
     firstName: 'patientFirstName',
     lastName: 'patientLastName',
@@ -39,23 +39,20 @@ describe('VISIT_TYPES', () => {
     specialization: 'optist',
     visitType: 'optist visit',
   };
-  const visitTypes2: VisitTypeDTO = {
-    specialization: 'surgery',
-    visitType: 'surgery visit',
-  };
 
   let visitTypeId: string;
 
   it('should get list of all visit types', () => {
     return request(app)
       .get('/visit_types')
+      .set('auth', `JWT ${doctorToken}`)
       .expect(200);
   });
-
   it('should create visit type', () => {
     return request(app)
       .post('/visit_types')
       .set('Accept', 'application/json')
+      .set('auth', `JWT ${doctorToken}`)
       .send(visitTypes1)
       .expect((res, req) => {
         expect(res.body.id).toBeDefined();
@@ -65,11 +62,24 @@ describe('VISIT_TYPES', () => {
       })
       .expect(201);
   });
+  it('should not create visit type - no auth', () => {
+    return request(app)
+      .post('/visit_types')
+      .set('Accept', 'application/json')
+      .set('auth', `JWT ${patientToken}`)
+      .send(visitTypes1)
+      .expect((res, req) => {
+        expect(res.body.id).toBeUndefined();
+        expect(res.body.code).toEqual(HttpStatus.FORBIDDEN);
+        expect(res.body.message).toEqual('Token error: Access Forbidden!');
+      });
+  });
 
   it('should not create visit type - visitType already exist', () => {
     return request(app)
       .post('/visit_types')
       .set('Accept', 'application/json')
+      .set('auth', `JWT ${doctorToken}`)
       .send(visitTypes1)
       .expect((res, req) => {
         expect(res.body.message).toEqual('Visit type already exists!');
@@ -79,6 +89,7 @@ describe('VISIT_TYPES', () => {
   it('should get one type of visits', () => {
     return request(app)
       .get(`/visit_types/${visitTypeId}`)
+      .set('auth', `JWT ${doctorToken}`)
       .expect((res, req) => {
         expect(res.body.specialization).toEqual(visitTypes1.specialization);
         expect(res.body.visitType).toEqual(visitTypes1.visitType);

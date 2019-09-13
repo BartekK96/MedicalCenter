@@ -1,4 +1,9 @@
-import { IsNotEmpty, IsBooleanString, IsNegative, IsNumber } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsBooleanString,
+  IsNegative,
+  IsNumber,
+} from 'class-validator';
 import { isBoolean } from 'util';
 
 export class DoctorRegisterDTO {
@@ -17,6 +22,7 @@ export class DoctorRegisterDTO {
   @IsNotEmpty()
   password: string;
 
-  @IsNumber()
-  confirmed: number;
+  // uncomment in production mode
+  // @IsNumber()
+  // confirmed: number;
 }

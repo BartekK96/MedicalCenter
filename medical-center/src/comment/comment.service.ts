@@ -6,6 +6,7 @@ import { CommentEntity } from './comment.entity';
 import { PatientEntity } from '../patient/patient.entity';
 import { CommentDTO } from './comment.dto';
 import { CommentRO } from './comment.ro';
+import { uuidValidator } from '../shared/uuidValidator';
 
 @Injectable()
 export class CommentService {
@@ -19,6 +20,7 @@ export class CommentService {
   ) {}
 
   async showOneDoctorComments(id: string): Promise<CommentEntity[]> {
+    uuidValidator(id);
     const doctor = await this.doctorRepository.find({
       where: { id },
       join: {
@@ -48,6 +50,8 @@ export class CommentService {
     patientId: string,
     data: CommentDTO,
   ): Promise<CommentRO> {
+    uuidValidator(doctorId);
+    uuidValidator(patientId);
     const doctor = await this.doctorRepository.findOne({
       where: { id: doctorId },
     });
@@ -105,6 +109,8 @@ export class CommentService {
     patientId: string,
     data: Partial<CommentDTO>,
   ): Promise<CommentEntity> {
+    uuidValidator(commentId);
+    uuidValidator(patientId);
     let comment = await this.commentRepository.findOne({
       where: { id: commentId },
       relations: ['patient'],
@@ -131,6 +137,8 @@ export class CommentService {
     commentId: string,
     patientId: string,
   ): Promise<CommentRO> {
+    uuidValidator(commentId);
+    uuidValidator(patientId);
     const comment = await this.commentRepository.findOne({
       where: { id: commentId },
       relations: ['patient'],

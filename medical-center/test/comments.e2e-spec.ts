@@ -22,21 +22,21 @@ beforeAll(async () => {
     firstName: 'doctorFirstName',
     lastName: 'doctorLastName',
     specialization: 'optist',
-    login: 'login2',
+    login: 'login5',
     password: 'password',
   };
 
   const patient: PatientRegisterDTO = {
     firstName: 'patientFirstName',
     lastName: 'patientLastName',
-    login: 'login2',
+    login: 'login5',
     password: 'password',
   };
 
   const patient2: PatientRegisterDTO = {
     firstName: 'patientFirstName',
     lastName: 'patientLastName',
-    login: 'login3',
+    login: 'login55',
     password: 'password',
   };
 

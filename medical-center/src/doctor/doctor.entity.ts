@@ -54,8 +54,9 @@ export class DoctorEntity {
   })
   role: UserRole;
 
-  @Column('int')
-  confirmed = -1;
+  // uncomment in production mode
+  // @Column('int')
+  // confirmed = -1;
 
   @OneToMany(type => VisitEntity, visitObject => visitObject.doctor, {
     cascade: true,

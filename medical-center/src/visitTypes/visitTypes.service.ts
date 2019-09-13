@@ -3,6 +3,7 @@ import {
   HttpStatus,
   HttpException,
   UseGuards,
+  Logger,
 } from '@nestjs/common';
 import { VisitTypesEntity } from './visitTypes.entity';
 import { Repository } from 'typeorm';
@@ -12,6 +13,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { VisitTypeRO } from './visitTypes.ro';
 import { AuthGuard } from '../shared/auth.guard';
 import { find } from 'rxjs/operators';
+import { uuidValidator } from '../shared/uuidValidator';
 
 @Injectable()
 @UseGuards(new AuthGuard())
@@ -35,6 +37,7 @@ export class VisitTypesService {
     });
   }
   async showOne(id: string): Promise<VisitTypeRO> {
+    uuidValidator(id);
     let type = await this.visitTypeRepository.findOne({
       where: { id },
     });
@@ -54,7 +57,7 @@ export class VisitTypesService {
 
     return this.toResponseObject(type);
   }
-  // Only admin can create new one, update or delete
+
   async createOne(data: VisitTypeRO): Promise<VisitTypesEntity> {
     const visitType = await this.visitTypeRepository.findOne({
       where: { visitType: data.visitType },
@@ -65,7 +68,6 @@ export class VisitTypesService {
         HttpStatus.BAD_REQUEST,
       );
     }
-
     const type = await this.visitTypeRepository.create({
       ...data,
     });

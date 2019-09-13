@@ -18,7 +18,7 @@ beforeAll(async () => {
   const patient: PatientRegisterDTO = {
     firstName: 'patientFirstName',
     lastName: 'patientLastName',
-    login: 'login5',
+    login: 'login4',
     password: 'password',
   };
 
@@ -34,11 +34,11 @@ describe('DOCTOR', () => {
     firstName: 'doctorFirstName',
     lastName: 'doctorLastName',
     specialization: 'optist',
-    login: 'login5',
+    login: 'login4',
     password: 'password',
   };
   const doctorLogin: DoctorLoginDTO = {
-    login: 'login5',
+    login: 'login4',
     password: 'password',
   };
   const patientLogin: PatientLoginDTO = {

@@ -20,7 +20,7 @@ beforeAll(async () => {
     firstName: 'doctorFirsName',
     lastName: 'doctorLastName',
     specialization: 'optist',
-    login: 'login6',
+    login: 'login3',
     password: 'password',
   };
 
@@ -33,12 +33,12 @@ describe('PATIENT', () => {
   const patientRegister: PatientRegisterDTO = {
     firstName: 'patientFirstName',
     lastName: 'patientLastName',
-    login: 'login6',
+    login: 'login3',
     password: 'password',
   };
 
   const patientLogin: PatientLoginDTO = {
-    login: 'login6',
+    login: 'login3',
     password: 'password',
   };
   it('should register new patient', async () => {

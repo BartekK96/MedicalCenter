@@ -37,7 +37,7 @@ export class VisitEntity {
   available: boolean = true;
 
   @ManyToOne(type => DoctorEntity, doctor => doctor.visits)
-  doctor: DoctorEntity; 
+  doctor: DoctorEntity;
 
   @ManyToOne(type => VisitTypesEntity, type => type.visits)
   visitType: VisitTypesEntity;

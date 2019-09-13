@@ -1,3 +1,6 @@
 {
-  "surgery": ["surgery visit", "USG"]
+  "surgery": ["surgery visit", "USG"],
+  "pediatrican": ["pediatrican visit"],
+  "gynecologist": ["gynecologist visit"],
+  "psychiatrist": ["psychiatrist visit"]
 }

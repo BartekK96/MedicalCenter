@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { DoctorLoginDTO } from './doctorLogin.dto';
 import { DoctorRO } from './doctor.ro';
 import { DoctorRegisterDTO } from './doctorRegister.dto';
+import { uuidValidator } from '../shared/uuidValidator';
 
 @Injectable()
 export class DoctorService {
@@ -20,12 +21,14 @@ export class DoctorService {
     });
     if (!doctor || !(await doctor.comparePassword(password))) {
       throw new HttpException('Invalid login/password', HttpStatus.BAD_REQUEST);
-    } else if (doctor.confirmed < 0) {
-      throw new HttpException(
-        'Your account is not verified',
-        HttpStatus.FORBIDDEN,
-      );
     }
+    // uncomment in production mode
+    //  if (doctor.confirmed < 0) {
+    //   throw new HttpException(
+    //     'Your account is not verified',
+    //     HttpStatus.FORBIDDEN,
+    //   );
+    // }
     return doctor.toResponseObject();
   }
 
@@ -41,12 +44,13 @@ export class DoctorService {
         HttpStatus.BAD_REQUEST,
       );
     }
-    if (data.confirmed >= 0) {
-      throw new HttpException(
-        'Confirmed options must be verified by admin!',
-        HttpStatus.FORBIDDEN,
-      );
-    }
+    // uncomment in production mode
+    // if (data.confirmed >= 0) {
+    //   throw new HttpException(
+    //     'Confirmed options must be verified by admin!',
+    //     HttpStatus.FORBIDDEN,
+    //   );
+    // }
     doctor = await this.doctorRepository.create(data);
     await this.doctorRepository.save(doctor);
     return doctor.toResponseObject();
@@ -58,6 +62,7 @@ export class DoctorService {
   }
 
   async showOneDoctor(id: string): Promise<DoctorRO> {
+    uuidValidator(id);
     const doctor = await this.doctorRepository.findOne({
       where: { id },
       relations: ['visits'],
@@ -73,6 +78,7 @@ export class DoctorService {
   }
 
   async findDoctor(id: string): Promise<DoctorEntity> {
+    uuidValidator(id);
     return await this.doctorRepository.findOne({
       where: { id },
       relations: ['visits'],

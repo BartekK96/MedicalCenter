@@ -13,5 +13,6 @@ export class DoctorRO {
   role: UserRole;
   visits?: VisitEntity[];
   token?: string;
-  confirmed?: number;
+  // uncomment in production mode
+ // confirmed?: number;
 }

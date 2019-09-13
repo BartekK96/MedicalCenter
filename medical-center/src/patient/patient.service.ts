@@ -5,6 +5,7 @@ import { PatientEntity } from './patient.entity';
 import { PatientRegisterDTO } from './patientRegister.dto';
 import { PatientRO } from './patient.ro';
 import { PatientLoginDTO } from './patientLogin.dto';
+import { uuidValidator } from '../shared/uuidValidator';
 
 @Injectable()
 export class PatientService {
@@ -42,6 +43,7 @@ export class PatientService {
     return patients.map(patient => patient.toResponseObject(false));
   }
   async showOne(id: string): Promise<any> {
+    uuidValidator(id);
     let patient = await this.patientRepository.findOne({
       where: { id },
     });
