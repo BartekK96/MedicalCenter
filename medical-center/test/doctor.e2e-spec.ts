@@ -45,8 +45,8 @@ describe('DOCTOR', () => {
     login: 'login5',
     password: 'password',
   };
-  it('should register doctor', () => {
-    return request(app)
+  it('should register doctor', async () => {
+    return await request(app)
       .post('/doctors/register')
       .set('Accept', 'application/json')
       .send(doctorRegister)
@@ -62,8 +62,8 @@ describe('DOCTOR', () => {
       })
       .expect(HttpStatus.CREATED);
   });
-  it('should reject duplicate registartion', () => {
-    return request(app)
+  it('should reject duplicate registartion', async () => {
+    return await request(app)
       .post('/doctors/register')
       .set('Accept', 'application/json')
       .send(doctorRegister)
@@ -72,8 +72,8 @@ describe('DOCTOR', () => {
         expect(HttpStatus.BAD_REQUEST);
       });
   });
-  it('should login doctor', () => {
-    return request(app)
+  it('should login doctor', async () => {
+    return await request(app)
       .post('/doctors/login')
       .set('Accept', 'application/json')
       .send(doctorLogin)

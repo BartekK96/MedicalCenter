@@ -6,6 +6,7 @@ import { app, createConn } from './constants';
 import { PatientRegisterDTO } from 'src/patient/patientRegister.dto';
 import { CommentDTO } from 'src/comment/comment.dto';
 import { HttpStatus } from '@nestjs/common';
+import { async } from 'rxjs/internal/scheduler/async';
 
 let doctorToken: string;
 let doctorId: string;
@@ -84,7 +85,6 @@ describe('COMMENTS', () => {
       .set('Accept', 'application/json')
       .send(comment1)
       .expect(({ body }) => {
-        // console.log(body);
         expect(body.id).toBeDefined();
         commentId = body.id;
         expect(body.comment).toEqual(comment1.comment);
@@ -94,8 +94,8 @@ describe('COMMENTS', () => {
       })
       .expect(HttpStatus.CREATED);
   });
-  it('should not add comment - no patient authorization', () => {
-    return request(app)
+  it('should not add comment - no patient authorization', async () => {
+    return await request(app)
       .post(`/doctors/doctor/${doctorId}`)
       .set('Accept', 'application/json')
       .send(comment1)
@@ -103,8 +103,8 @@ describe('COMMENTS', () => {
         expect(res.body.code).toEqual(HttpStatus.FORBIDDEN);
       });
   });
-  it('should not add second comment to same doctor', () => {
-    return request(app)
+  it('should not add second comment to same doctor', async () => {
+    return await request(app)
       .post(`/doctors/doctor/${doctorId}`)
       .set('auth', `JWT ${patientToken1}`)
       .set('Accept', 'application/json')
@@ -114,8 +114,8 @@ describe('COMMENTS', () => {
         expect(body.message).toEqual('You already add comment to this doctor!');
       });
   });
-  it('should not add comment - doctors can not add comment', () => {
-    return request(app)
+  it('should not add comment - doctors can not add comment', async () => {
+    return await request(app)
       .post(`/doctors/doctor/${doctorId}`)
       .set('auth', `JWT ${doctorToken}`)
       .set('Accept', 'application/json')
@@ -126,8 +126,8 @@ describe('COMMENTS', () => {
       });
   });
 
-  it('should update first part of comment', () => {
-    return request(app)
+  it('should update first part of comment', async () => {
+    return await request(app)
       .put(`/doctors/doctor/${commentId}`)
       .set('auth', `JWT ${patientToken1}`)
       .set('Accept', 'application/json')
@@ -141,8 +141,8 @@ describe('COMMENTS', () => {
       })
       .expect(200);
   });
-  it('should update second part of comment', () => {
-    return request(app)
+  it('should update second part of comment', async () => {
+    return await request(app)
       .put(`/doctors/doctor/${commentId}`)
       .set('auth', `JWT ${patientToken1}`)
       .set('Accept', 'application/json')
@@ -156,8 +156,8 @@ describe('COMMENTS', () => {
       })
       .expect(200);
   });
-  it('should not update comment - patient do not own it', () => {
-    return request(app)
+  it('should not update comment - patient do not own it', async () => {
+    return await request(app)
       .put(`/doctors/doctor/${commentId}`)
       .set('auth', `JWT ${patientToken2}`)
       .set('Accept', 'application/json')
@@ -167,8 +167,8 @@ describe('COMMENTS', () => {
         expect(body.message).toEqual('You do not own this comment');
       });
   });
-  it('should not delete comment - patient do not own it', () => {
-    return request(app)
+  it('should not delete comment - patient do not own it', async () => {
+    return await request(app)
       .delete(`/doctors/doctor/${commentId}`)
       .set('auth', `JWT ${patientToken2}`)
       .set('Accept', 'application/json')

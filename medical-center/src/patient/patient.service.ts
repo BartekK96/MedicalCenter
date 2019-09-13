@@ -19,6 +19,7 @@ export class PatientService {
     if (!patient || !(await patient.comparePassword(password))) {
       throw new HttpException('Invalid login/password', HttpStatus.BAD_REQUEST);
     }
+
     return patient.toResponseObject();
   }
 
@@ -41,10 +42,15 @@ export class PatientService {
     return patients.map(patient => patient.toResponseObject(false));
   }
   async showOne(id: string): Promise<any> {
-    const patient = await this.patientRepository.findOne({
+    let patient = await this.patientRepository.findOne({
       where: { id },
-      relations: ['visit'],
     });
-    return patient;
+    if (patient.visits) {
+      patient = await this.patientRepository.findOne({
+        where: { id },
+        relations: ['visits'],
+      });
+    }
+    return patient.toResponseObject(false);
   }
 }

@@ -20,6 +20,11 @@ export class DoctorService {
     });
     if (!doctor || !(await doctor.comparePassword(password))) {
       throw new HttpException('Invalid login/password', HttpStatus.BAD_REQUEST);
+    } else if (doctor.confirmed < 0) {
+      throw new HttpException(
+        'Your account is not verified',
+        HttpStatus.FORBIDDEN,
+      );
     }
     return doctor.toResponseObject();
   }
@@ -36,7 +41,12 @@ export class DoctorService {
         HttpStatus.BAD_REQUEST,
       );
     }
-
+    if (data.confirmed >= 0) {
+      throw new HttpException(
+        'Confirmed options must be verified by admin!',
+        HttpStatus.FORBIDDEN,
+      );
+    }
     doctor = await this.doctorRepository.create(data);
     await this.doctorRepository.save(doctor);
     return doctor.toResponseObject();

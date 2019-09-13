@@ -54,6 +54,9 @@ export class DoctorEntity {
   })
   role: UserRole;
 
+  @Column('int')
+  confirmed = -1;
+
   @OneToMany(type => VisitEntity, visitObject => visitObject.doctor, {
     cascade: true,
   })
@@ -75,8 +78,8 @@ export class DoctorEntity {
       firstName,
       lastName,
       specialization,
-
       visits,
+      // confirmed,
       role,
       token,
     } = this;
@@ -87,15 +90,15 @@ export class DoctorEntity {
       firstName,
       lastName,
       specialization,
+      // confirmed,
       visits,
-
       role,
     };
     if (this.visits) {
       responseObject.visits = this.visits;
     }
-
     let returnResponseObject;
+
     if (showToken) {
       returnResponseObject = { ...responseObject, token };
     } else {

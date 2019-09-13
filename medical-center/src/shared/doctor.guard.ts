@@ -18,7 +18,6 @@ export class DoctorGuard implements CanActivate {
     }
 
     const user = await this.validateToken(request.headers.auth);
-
     return true;
   }
 

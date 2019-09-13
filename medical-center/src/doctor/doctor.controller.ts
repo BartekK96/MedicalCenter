@@ -84,7 +84,7 @@ export class DoctorController {
     return this.doctorService.login(data);
   }
 
-  // only admin can create doctor account
+  // before using doctor account admin must confirm each doctor
   @Post('register')
   @UsePipes(new ValidationPipe())
   register(@Body() data: DoctorRegisterDTO) {

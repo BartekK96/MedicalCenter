@@ -1,4 +1,5 @@
-import { IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, IsBooleanString, IsNegative, IsNumber } from 'class-validator';
+import { isBoolean } from 'util';
 
 export class DoctorRegisterDTO {
   @IsNotEmpty()
@@ -15,4 +16,7 @@ export class DoctorRegisterDTO {
 
   @IsNotEmpty()
   password: string;
+
+  @IsNumber()
+  confirmed: number;
 }
