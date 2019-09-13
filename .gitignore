@@ -1,2 +1,11 @@
-/medical-center/.env
+medicalCenterBackend/.env
 .gitignore
+
+# compiled output
+medicalCenterBackend/dist
+medicalCenterBackend/node_modules
+
+
+# OS
+.DS_Store
+
